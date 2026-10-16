@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Chính Sách Bảo Mật Thông Tin | MTRUONG-STORE',
-  description: 'Chính sách bảo mật và bảo vệ dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP tại MTRUONG-STORE.',
+  title: 'Chính Sách Bảo Mật Thông Tin',
+  description: 'Chính sách bảo mật và bảo vệ dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP tại Cún-shop.',
 };
 
 export default function PrivacyPage() {
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">1. Mục đích thu thập dữ liệu</h2>
             <p>
-              MTRUONG-STORE cam kết bảo vệ tuyệt đối thông tin cá nhân của khách hàng. Chúng tôi thu thập dữ liệu nhằm các mục đích:
+              Cún-shop cam kết bảo vệ tuyệt đối thông tin cá nhân của khách hàng. Chúng tôi thu thập dữ liệu nhằm các mục đích:
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Xử lý và hoàn tất đơn hàng, vận chuyển và đối soát thanh toán.</li>
@@ -45,14 +45,14 @@ export default function PrivacyPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">4. Quyền của chủ thể dữ liệu</h2>
             <p>
-              Khách hàng có quyền tra cứu, cập nhật, chỉnh sửa hoặc yêu cầu xóa bỏ tài khoản dữ liệu cá nhân của mình bất kỳ lúc nào bằng cách gửi yêu cầu tới Email: <strong>privacy@mtruong-store.vn</strong>.
+              Khách hàng có quyền tra cứu, cập nhật, chỉnh sửa hoặc yêu cầu xóa bỏ tài khoản dữ liệu cá nhân của mình bất kỳ lúc nào bằng cách gửi yêu cầu tới Email: <strong>privacy@cun-shop.vn</strong>.
             </p>
           </section>
         </div>
 
         <div className="pt-6 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
           <Link href="/" className="hover:text-emerald-400 font-bold transition">← Quay lại Trang chủ</Link>
-          <span>MTRUONG-STORE Privacy Shield</span>
+          <span>Cún-shop Privacy Shield</span>
         </div>
       </div>
     </div>

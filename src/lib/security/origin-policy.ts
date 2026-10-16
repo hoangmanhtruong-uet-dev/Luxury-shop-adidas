@@ -32,16 +32,34 @@ interface MutationExemption {
  * This list is deliberately exact and intentionally small.
  *
  * Health probes only expose GET handlers, so they are covered by the safe-method
- * rule and do not need a mutation exemption. There are currently no OAuth
- * callbacks, cron handlers, internal jobs, or other M2M API routes. Add any such
- * route here only after it has independent authentication that does not rely on
- * browser cookies.
+ * rule and do not need a mutation exemption.
+ *
+ * Every entry below is a machine-to-machine POST that arrives from an external
+ * payment provider. Such callers send NO browser `Origin` header, so without an
+ * exemption the origin check would reject them with 403 ORIGIN_REQUIRED before
+ * they ever reach their route handler. Each one carries independent
+ * authentication that does not rely on browser cookies:
+ *   - /api/webhook              -> timestamped HMAC-SHA256 (webhook-verifier.ts)
+ *   - /api/payments/vnpay/ipn   -> HMAC-SHA512 signature check in the handler
+ *   - /api/payments/payos/webhook -> payOS SDK `webhooks.verify()` signature check
+ *
+ * Do NOT add browser-facing routes here: the origin check is the CSRF defence.
  */
 export const API_MUTATION_ORIGIN_EXEMPTIONS: readonly MutationExemption[] = [
   {
     pathname: '/api/webhook',
     methods: new Set(['POST']),
     reason: 'Payment-provider M2M callback authenticated by timestamped HMAC signature in its route handler.',
+  },
+  {
+    pathname: '/api/payments/vnpay/ipn',
+    methods: new Set(['POST']),
+    reason: 'VNPay IPN is a server-to-server POST verified by HMAC-SHA512 signature inside the route handler.',
+  },
+  {
+    pathname: '/api/payments/payos/webhook',
+    methods: new Set(['POST']),
+    reason: 'PayOS webhook is a server-to-server POST verified by the PayOS SDK signature check inside the route handler.',
   },
 ];
 

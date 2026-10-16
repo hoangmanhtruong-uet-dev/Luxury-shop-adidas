@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { DEFAULT_PRODUCT_IMAGE, getProductImage } from '@/lib/upload/product-image';
 import SafeImage from '@/components/common/SafeImage';
 import { useAuthStore } from '@/store/authStore';
+import { useToastStore } from '@/components/ui/Toast';
 import { usePathname, useRouter } from 'next/navigation';
 import { FiShoppingCart, FiStar } from 'react-icons/fi';
 
@@ -49,6 +50,12 @@ export default function ProductCard({ product, index = 0, imagePriority = false 
     }
     addItem(product, 1);
     setAdded(true);
+    const total = useCartStore.getState().getItemCount();
+    useToastStore.getState().addToast(
+      `Đã thêm ${product.name} (giỏ: ${total} món)`,
+      'success',
+      { label: 'Xem giỏ', href: '/cart' },
+    );
     setTimeout(() => setAdded(false), 1500);
   };
 

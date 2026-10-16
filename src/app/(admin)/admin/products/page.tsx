@@ -5,6 +5,7 @@ import { formatPrice } from '@/lib/utils';
 import { useToastStore } from '@/components/ui/Toast';
 import SafeImage from '@/components/common/SafeImage';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/upload/product-image';
+import { extractProducts } from '@/lib/api/products-response';
 
 export default function AdminProductsPage() {
   const [activeTab, setActiveTab] = useState<'products' | 'categories'>('products');
@@ -17,9 +18,11 @@ export default function AdminProductsPage() {
 
   const fetchAllProducts = useCallback(async () => {
     try {
-      const res = await fetch('/api/products');
+      // Phase 3.2: the endpoint is now paginated with a 50-row server cap.
+      // Admin needs a dedicated paginated listing for catalogues beyond 50 rows.
+      const res = await fetch('/api/products?limit=50');
       const data = await res.json();
-      if (Array.isArray(data)) setProducts(data);
+      setProducts(extractProducts(data));
     } catch {
       addToast('Lỗi khi lấy dữ liệu sản phẩm.');
     } finally {

@@ -20,6 +20,24 @@ export function assertDemoScriptMayMutateDatabase(options: DemoScriptGuardOption
     throw new Error(`${options.scriptName} requires ${options.optInEnv}=true before mutating the database`);
   }
 
+  // Narrow escape hatch for a deliberate, operator-confirmed remote seed (e.g. a
+  // fresh empty Supabase used as dev/staging). The operator must name the exact
+  // target hostname — a leaked/confused DATABASE_URL can never satisfy this by
+  // accident. Production block above still applies unless allowProduction.
+  const confirmHost = process.env.SEED_CONFIRM_HOST?.trim().toLowerCase();
+  if (confirmHost) {
+    let host = '';
+    try {
+      host = new URL(databaseUrl).hostname.toLowerCase();
+    } catch {
+      host = '';
+    }
+    if (host && host === confirmHost) return;
+    throw new Error(
+      `${options.scriptName}: SEED_CONFIRM_HOST=${confirmHost} does not match database host ${host || '(unparseable)'}`,
+    );
+  }
+
   if (!databaseUrl || !DEMO_DATABASE_HINTS.some(pattern => pattern.test(databaseUrl))) {
     throw new Error(`${options.scriptName} requires a development/test/demo database URL`);
   }

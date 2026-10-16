@@ -198,20 +198,10 @@ export default function UserOrdersPage() {
           {filteredOrders.map(order => {
             const status = getStatusInfo(order.status);
             
-            // Mocking store details based on product name for realism
-            let storeType = 'MALL';
-            let storeName = 'MTRUONG Flagship Mall';
-            let storeColor = '#ef4444';
-            
-            if (order.orderItems.some(i => i.product.name.toLowerCase().includes('asus'))) {
-              storeType = 'AUTHENTIC';
-              storeName = 'ASUS ROG Official Store';
-              storeColor = '#3b82f6';
-            } else if (order.orderItems.some(i => i.product.name.toLowerCase().includes('cà phê') || i.product.name.toLowerCase().includes('delonghi'))) {
-              storeType = 'MALL';
-              storeName = 'Delonghi Home Luxury Official';
-              storeColor = '#ef4444';
-            }
+            // Cún-shop là nhà bán duy nhất — không dựng "shop" giả theo tên sản phẩm.
+            const storeType = 'CHÍNH HÃNG';
+            const storeName = 'Cún-shop – Giày đá bóng chính hãng';
+            const storeColor = '#f97316';
 
             return (
               <article key={order.id} className="glass-card" style={{ padding: 24, borderRadius: 20, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)' }}>

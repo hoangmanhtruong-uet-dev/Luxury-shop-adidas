@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { getSession } from '@/lib/auth/auth';
 import { Money, serializeMoneyFields } from '@/lib/utils/money';
 import { voucherMoneySchema } from '@/lib/validations';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: Request) {
   try {
@@ -23,12 +24,33 @@ export async function POST(req: Request) {
     } });
     return NextResponse.json(serializeMoneyFields(voucher));
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Lỗi server' }, { status: 400 });
+    // Phase 3.4 (Warning W4): this returned `error.message` verbatim with a 400,
+    // leaking raw Prisma/MySQL text (host, database name, driver internals) and
+    // mis-reporting server faults as client errors.
+    logger.error('admin.vouchers.create_failed', error);
+    return NextResponse.json(
+      { error: { code: 'INTERNAL_SERVER_ERROR', message: 'Lỗi server' } },
+      { status: 500 },
+    );
   }
 }
 
 export async function GET() {
   const session = await getSession();
   if (!session || session.role !== 'admin') return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-  return NextResponse.json(serializeMoneyFields(await prisma.voucher.findMany({ orderBy: { createdAt: 'desc' } })));
+  // Phase 3.4 (Warning W8): bounded + paginated. This previously returned the
+  // entire voucher table.
+  try {
+    const vouchers = await prisma.voucher.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+    return NextResponse.json(serializeMoneyFields(vouchers));
+  } catch (error) {
+    logger.error('admin.vouchers.list_failed', error);
+    return NextResponse.json(
+      { error: { code: 'INTERNAL_SERVER_ERROR', message: 'Lỗi server' } },
+      { status: 500 },
+    );
+  }
 }

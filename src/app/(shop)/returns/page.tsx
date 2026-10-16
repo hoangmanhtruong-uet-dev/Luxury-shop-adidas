@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Chính Sách Đổi Trả & Hoàn Tiền | MTRUONG-STORE',
-  description: 'Chính sách kiểm hàng, đổi trả 1 đổi 1 trong 30 ngày và quy trình hoàn tiền tại MTRUONG-STORE.',
+  title: 'Chính Sách Đổi Trả & Hoàn Tiền',
+  description: 'Chính sách kiểm hàng, đổi trả 1 đổi 1 trong 30 ngày và quy trình hoàn tiền tại Cún-shop.',
 };
 
 export default function ReturnsPage() {
@@ -19,7 +19,7 @@ export default function ReturnsPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">1. Chính sách đồng kiểm (Kiểm hàng)</h2>
             <p>
-              MTRUONG-STORE hỗ trợ chính sách <strong>Đồng kiểm trực tiếp</strong> khi nhận hàng. Khách hàng có quyền mở gói hàng kiểm tra ngoại quan (không bóc tem niêm phong niêm yết của nhà sản xuất) trước khi thanh toán cho nhân viên giao hàng.
+              Cún-shop hỗ trợ chính sách <strong>Đồng kiểm trực tiếp</strong> khi nhận hàng. Khách hàng có quyền mở gói hàng kiểm tra ngoại quan (không bóc tem niêm phong niêm yết của nhà sản xuất) trước khi thanh toán cho nhân viên giao hàng.
             </p>
           </section>
 
@@ -36,14 +36,14 @@ export default function ReturnsPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">3. Quy trình hoàn tiền (Refund Process)</h2>
             <p>
-              Khi yêu cầu trả hàng/hoàn tiền được Người bán hoặc Ban quản trị Sàn duyệt, số tiền sẽ được tự động hoàn trực tiếp vào Ví tài khoản MTRUONG-STORE của bạn hoặc hoàn trả lại tài khoản ngân hàng gốc trong vòng <strong>1 đến 3 ngày làm việc</strong>.
+              Khi yêu cầu trả hàng/hoàn tiền được Người bán hoặc Ban quản trị Sàn duyệt, số tiền sẽ được tự động hoàn trực tiếp vào Ví tài khoản Cún-shop của bạn hoặc hoàn trả lại tài khoản ngân hàng gốc trong vòng <strong>1 đến 3 ngày làm việc</strong>.
             </p>
           </section>
         </div>
 
         <div className="pt-6 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
           <Link href="/" className="hover:text-amber-400 font-bold transition">← Quay lại Trang chủ</Link>
-          <span>MTRUONG-STORE Guarantee</span>
+          <span>Cún-shop Guarantee</span>
         </div>
       </div>
     </div>

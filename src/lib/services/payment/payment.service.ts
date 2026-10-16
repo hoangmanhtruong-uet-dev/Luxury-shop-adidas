@@ -9,7 +9,7 @@ import { ORDER_STATUS, transitionOrderInTransaction } from '@/lib/services/order
 
 export class PaymentService {
   static async recordWebhookSuccess(tx: TransactionClient, input: { orderId: string; provider: string; providerEventId: string }) {
-    await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('`order`')} WHERE id = ${input.orderId} FOR UPDATE`);
+    await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('"order"')} WHERE id = ${input.orderId} FOR UPDATE`);
     const order = await tx.order.findUnique({ where: { id: input.orderId } });
     if (!order) throw new NotFoundError('Webhook references an unknown order');
     if (!order.userId) throw new ValidationError('Paid order has no wallet owner');
@@ -31,7 +31,7 @@ export class PaymentService {
   }
 
   static async create(tx: TransactionClient, input: { orderId: string; userId: string; idempotencyKey: string }) {
-    await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('`order`')} WHERE id = ${input.orderId} FOR UPDATE`);
+    await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('"order"')} WHERE id = ${input.orderId} FOR UPDATE`);
     const order = await tx.order.findFirst({ where: { id: input.orderId, userId: input.userId } });
     if (!order) throw new NotFoundError('Không tìm thấy đơn hàng');
     if (order.paymentStatus === 'paid') throw new ConflictError('Đơn hàng đã được thanh toán');
@@ -72,7 +72,7 @@ export class RefundService {
     await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM payment WHERE id = ${input.paymentId} FOR UPDATE`);
     const payment = await tx.payment.findFirst({ where: { id: input.paymentId, userId: input.userId } });
     if (!payment) throw new NotFoundError('Không tìm thấy giao dịch thanh toán');
-    await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('`order`')} WHERE id = ${payment.orderId} FOR UPDATE`);
+    await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('"order"')} WHERE id = ${payment.orderId} FOR UPDATE`);
     let order = await tx.order.findUniqueOrThrow({ where: { id: payment.orderId } });
     if (order.status !== ORDER_STATUS.REFUND_PENDING) {
       order = await transitionOrderInTransaction(tx, { orderId: order.id, targetStatus: ORDER_STATUS.REFUND_PENDING, actor: { type: 'SYSTEM', workerId: 'refund-service' }, reason: 'Refund requested', idempotencyKey: `refund-pending:${input.idempotencyKey}` });

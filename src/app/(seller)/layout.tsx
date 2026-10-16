@@ -1,18 +1,12 @@
-'use client';
-import SellerSidebar from '@/components/seller/SellerSidebar';
+import type { Metadata } from 'next';
+import SellerLayoutClient from './SellerLayoutClient';
+
+/** Phase 4.2: seller workspace must not be indexed. */
+export const metadata: Metadata = {
+  title: 'Kênh người bán',
+  robots: { index: false, follow: false, nocache: true },
+};
 
 export default function SellerLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="page-container" style={{ paddingTop: '30px', paddingBottom: '60px' }}>
-      <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
-        {/* Sidebar Kênh người bán */}
-        <SellerSidebar />
-
-        {/* Vùng làm việc chính */}
-        <main style={{ flex: 1 }}>
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+  return <SellerLayoutClient>{children}</SellerLayoutClient>;
 }

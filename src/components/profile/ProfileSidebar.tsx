@@ -154,7 +154,7 @@ export default function ProfileSidebar() {
             <FiHeadphones size={24} color="rgba(255,255,255,0.3)" />
             <div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 4 }}>HOTLINE VIP 24/7</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)' }}>1800 1234 56</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)' }}>0968 544 769</div>
             </div>
           </div>
         </div>

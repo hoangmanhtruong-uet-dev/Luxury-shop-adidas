@@ -1,19 +1,22 @@
 'use client';
+import Link from 'next/link';
 import { create } from 'zustand';
 
-interface Toast { id: number; message: string; type: 'success' | 'error' | 'info'; }
+interface ToastAction { label: string; href: string; }
+interface Toast { id: number; message: string; type: 'success' | 'error' | 'info'; action?: ToastAction; }
 interface ToastState {
   toasts: Toast[];
-  addToast: (message: string, type?: Toast['type']) => void;
+  addToast: (message: string, type?: Toast['type'], action?: ToastAction) => void;
   removeToast: (id: number) => void;
 }
 
 export const useToastStore = create<ToastState>((set) => ({
   toasts: [],
-  addToast: (message, type = 'success') => {
-    const id = Date.now();
-    set(s => ({ toasts: [...s.toasts, { id, message, type }] }));
-    setTimeout(() => set(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 3000);
+  addToast: (message, type = 'success', action) => {
+    const id = Date.now() + Math.random();
+    // Compact: keep max 3 visible, drop oldest.
+    set(s => ({ toasts: [...s.toasts.slice(-2), { id, message, type, action }] }));
+    setTimeout(() => set(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 2800);
   },
   removeToast: (id) => set(s => ({ toasts: s.toasts.filter(t => t.id !== id) })),
 }));
@@ -25,8 +28,13 @@ export default function ToastContainer() {
     <div className="toast-container">
       {toasts.map(t => (
         <div key={t.id} className={`toast toast-${t.type}`}>
-          <span>{t.type === 'success' ? '✅' : t.type === 'error' ? '❌' : 'ℹ️'}</span>
-          <span style={{ fontSize:'14px', color:'var(--text-primary)' }}>{t.message}</span>
+          <span className="toast-icon">{t.type === 'success' ? '✅' : t.type === 'error' ? '❌' : 'ℹ️'}</span>
+          <span className="toast-message">{t.message}</span>
+          {t.action && (
+            <Link href={t.action.href} className="toast-action">
+              {t.action.label}
+            </Link>
+          )}
         </div>
       ))}
     </div>

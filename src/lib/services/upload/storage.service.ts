@@ -11,6 +11,9 @@ export interface StorageAdapter {
   getUrl(key: string): string;
 }
 
+/** Phase 3.4 (Warning W10): bound every Cloudinary call. */
+const CLOUDINARY_TIMEOUT_MS = 15_000;
+
 class LocalStorageAdapter implements StorageAdapter {
   private uploadDir: string;
 
@@ -80,8 +83,25 @@ class CloudinaryStorageAdapter implements StorageAdapter {
     });
   }
 
+  /**
+   * Phase 3.4 (Warning W10): the Cloudinary SDK accepts no timeout option on
+   * `destroy()`, and `upload_stream` is callback-based, so both calls are bounded
+   * explicitly. Without a bound a stalled request held the upload handler open
+   * until the platform timeout, and the catch block then ran while the object may
+   * already exist at Cloudinary — leaking quota and CDN cost.
+   */
+  private static withTimeout<T>(work: Promise<T>, label: string): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${label}-timeout`)), CLOUDINARY_TIMEOUT_MS);
+    });
+    return Promise.race([work, timeout]).finally(() => {
+      if (timer) clearTimeout(timer);
+    });
+  }
+
   async upload(file: Buffer, _filename: string, _mimeType: string): Promise<string> {
-    return new Promise((resolve, reject) => {
+    const upload = new Promise<string>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream({
         folder: env.CLOUDINARY_FOLDER,
         resource_type: 'image',
@@ -96,10 +116,14 @@ class CloudinaryStorageAdapter implements StorageAdapter {
       });
       stream.end(file);
     });
+    return CloudinaryStorageAdapter.withTimeout(upload, 'cloudinary-upload');
   }
 
   async delete(key: string): Promise<void> {
-    await cloudinary.uploader.destroy(key, { resource_type: 'image', invalidate: true });
+    await CloudinaryStorageAdapter.withTimeout(
+      cloudinary.uploader.destroy(key, { resource_type: 'image', invalidate: true }),
+      'cloudinary-delete',
+    );
   }
 
   getUrl(key: string): string {

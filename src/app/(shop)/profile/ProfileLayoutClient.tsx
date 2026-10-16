@@ -1,4 +1,5 @@
 'use client';
+import { Suspense } from 'react';
 import ProfileSidebar from '@/components/profile/ProfileSidebar';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -34,7 +35,11 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
       <div className="profile-layout" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '32px', alignItems: 'flex-start' }}>
         {/* Sidebar */}
         <div style={{ position: 'sticky', top: '100px', height: 'calc(100vh - 120px)' }}>
-          <ProfileSidebar />
+          {/* ProfileSidebar reads `useSearchParams()`; the boundary keeps the
+              production prerender from failing. */}
+          <Suspense fallback={null}>
+            <ProfileSidebar />
+          </Suspense>
         </div>
 
         {/* Nội dung trang bên phải */}

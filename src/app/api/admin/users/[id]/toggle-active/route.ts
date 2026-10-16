@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getSession } from '@/lib/auth/auth';
+import { SessionService } from '@/lib/services/auth/session.service';
 
 export async function PUT(req: Request, context: { params: Promise<{ id: string }> }) {
   const params = await context.params;
@@ -24,6 +25,13 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
       where: { id: params.id },
       data: { isActive: !user.isActive },
     });
+
+    // Phase 2.4 (Warning W2): revoking refresh sessions is what actually locks the
+    // account. Without it the attacker keeps a valid session and, for up to the
+    // 15-minute access-token TTL, keeps the already-issued access token too.
+    if (!updatedUser.isActive) {
+      await SessionService.revokeAllUserSessions(params.id);
+    }
 
     return NextResponse.json({
       message: updatedUser.isActive ? 'Đã mở khóa tài khoản thành công ✨' : 'Đã khóa tài khoản thành công 🔒',

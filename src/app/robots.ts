@@ -7,14 +7,18 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
+      // Both the slashed and unslashed forms are listed: Google treats
+      // "Disallow: /admin/" as not covering the bare "/admin" request.
       disallow: [
-        '/admin/',
-        '/api/',
-        '/profile/',
-        '/seller/',
-        '/shipper/',
-        '/checkout/',
-        '/cart/',
+        '/admin', '/admin/',
+        '/api/', '/api',
+        '/profile', '/profile/',
+        '/seller', '/seller/',
+        '/shipper', '/shipper/',
+        '/checkout', '/checkout/',
+        '/cart', '/cart/',
+        '/login', '/login/',
+        '/register', '/register/',
       ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,

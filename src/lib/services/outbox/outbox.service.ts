@@ -131,7 +131,7 @@ export const outboxConfig = Object.freeze({
   backoffBaseMs: intEnv('OUTBOX_BACKOFF_BASE_MS', 1000, 1, 300_000),
   backoffMaxMs: intEnv('OUTBOX_BACKOFF_MAX_MS', 300_000, 1, 86_400_000),
   concurrency: intEnv('OUTBOX_CONCURRENCY', 5, 1, 100),
-  shutdownTimeoutMs: intEnv('OUTBOX_SHUTDOWN_TIMEOUT_MS', 30_000, 100, 300_000),
+  shutdownTimeoutMs: intEnv('OUTBOX_SHUTDOWN_TIMEOUT_MS', 8_000, 100, 300_000),
   heartbeatTtlSeconds: intEnv('OUTBOX_HEARTBEAT_TTL_SECONDS', 15, 2, 300),
   deadLetterCriticalThreshold: intEnv('OUTBOX_DEAD_LETTER_CRITICAL_THRESHOLD', 1, 0, 100_000),
 });

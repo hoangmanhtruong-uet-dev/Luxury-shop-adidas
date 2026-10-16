@@ -79,7 +79,7 @@ export default function FlashSalePage() {
                 Flash Sale <span className="text-amber-300">Đặc Quyền</span>
               </h1>
               <p className="text-white/90 text-sm md:text-base max-w-xl">
-                Cơ hội sở hữu các sản phẩm hàng hiệu cao cấp với giá ưu đãi cực sốc lên đến 50%. Số lượng có hạn!
+                Cơ hội sở hữu giày đá bóng chính hãng với giá ưu đãi cực sốc lên đến 50%. Số lượng có hạn!
               </p>
             </div>
 

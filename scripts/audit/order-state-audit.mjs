@@ -1,10 +1,15 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const root = process.cwd();
 const allowed = new Set(['src/lib/services/order/order-state.service.ts']);
 const findings = [];
 function walk(dir) {
+  // Phase 4.4 (Warning W11): `tests/` does not exist in this repository yet, so
+  // the previous `walk(join(root, 'tests'))` threw ENOENT and crashed the audit
+  // with a stack trace instead of a verdict — taking the CI step red for a
+  // reason unrelated to what the audit actually checks.
+  if (!existsSync(dir)) return;
   for (const name of readdirSync(dir)) {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) walk(path);
@@ -19,6 +24,7 @@ function walk(dir) {
 }
 walk(join(root, 'src'));
 walk(join(root, 'tests'));
+walk(join(root, 'scripts'));
 if (findings.length) {
   console.error(`Forbidden direct Order.status writes:\n${findings.join('\n')}`);
   process.exit(1);

@@ -46,4 +46,11 @@ build/
 # Temporary files
 *.tmp
 *.temp
-node_modules
+
+# TypeScript incremental build cache (không được commit)
+*.tsbuildinfo
+
+# Tài liệu bàn giao chứa secret Production — TUYỆT ĐỐI không commit
+tong_hop_dich_vu_mtruong_store.md
+*.env.production
+*.env.prod

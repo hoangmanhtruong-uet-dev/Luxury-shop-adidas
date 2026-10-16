@@ -21,8 +21,17 @@ export function canAccessSeller(session: JWTPayload | null): session is JWTPaylo
   return !!session && (session.isSeller || session.role === 'admin');
 }
 
+/**
+ * Guards the shipper workspace.
+ *
+ * Phase 2.3: this helper previously OR'd in `role === 'admin'`, which made it an
+ * "access" predicate rather than an "is a shipper" predicate — it returned true
+ * for administrators who are explicitly NOT allowed on the shipper routes
+ * (`shipper/*` handlers test `session.role !== 'shipper'`, which excludes admins).
+ * The roles are now aligned: only `shipper` may enter.
+ */
 export function canAccessShipper(session: JWTPayload | null): session is JWTPayload {
-  return !!session && (session.role === 'shipper' || session.role === 'admin');
+  return !!session && session.role === 'shipper';
 }
 
 export async function requireAdmin(): Promise<JWTPayload> {

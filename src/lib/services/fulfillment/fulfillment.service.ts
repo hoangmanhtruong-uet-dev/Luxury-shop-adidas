@@ -89,7 +89,7 @@ async function transitionInTransaction(tx: TransactionClient, input: TransitionF
 
   const reference = await tx.sellerFulfillment.findUnique({ where: { id: input.fulfillmentId }, select: { orderId: true } });
   if (!reference) throw fulfillmentError('FULFILLMENT_NOT_FOUND', 'Fulfillment not found', 404);
-  await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('`order`')} WHERE id = ${reference.orderId} FOR UPDATE`);
+  await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('"order"')} WHERE id = ${reference.orderId} FOR UPDATE`);
   await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM seller_fulfillment WHERE id = ${input.fulfillmentId} FOR UPDATE`);
   const fulfillment = await tx.sellerFulfillment.findUnique({ where: { id: input.fulfillmentId }, include: { order: true } });
   if (!fulfillment) throw fulfillmentError('FULFILLMENT_NOT_FOUND', 'Fulfillment not found', 404);

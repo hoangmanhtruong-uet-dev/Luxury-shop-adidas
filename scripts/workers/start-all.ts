@@ -1,3 +1,15 @@
+/**
+ * DEPRECATED — Vercel topology (OP1).
+ *
+ * This combined supervisor (Next.js web child + infinite outbox worker loop) only
+ * makes sense on a long-lived VM (Render / VPS). On Vercel `npm start` is never
+ * invoked — Vercel serves the serverless entrypoint and background work runs via
+ * `vercel.json` crons hitting `/api/admin/cron/*`.
+ *
+ * Kept for local full-stack dev (`npm run start:legacy-all`) and as a reference
+ * if the project ever moves back to a VM. Do NOT point any production
+ * Procfile/start command at this file while deployed on Vercel.
+ */
 import os from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { spawn, type ChildProcess } from 'node:child_process';

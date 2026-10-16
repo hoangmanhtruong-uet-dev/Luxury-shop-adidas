@@ -60,7 +60,7 @@ export default function AdminSidebar() {
       </div>
 
       <div className="p-4 border-t border-[#131D2E] text-[11px] text-slate-500 text-center">
-        MTruong Store © 2026 Admin
+        Cún Store © 2026 Admin
       </div>
     </aside>
   );

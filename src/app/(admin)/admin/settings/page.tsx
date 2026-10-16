@@ -18,9 +18,9 @@ type SiteConfig = {
 };
 
 const defaultConfig: SiteConfig = {
-  siteName: 'MTRUONG-STORE',
-  hotline: '1900 8888',
-  contactEmail: 'support@mtruong.store',
+  siteName: 'Cún-shop',
+  hotline: '0968 544 769',
+  contactEmail: 'support@cun-shop.store',
   address: 'Việt Nam',
   codEnabled: true,
   momoEnabled: true,

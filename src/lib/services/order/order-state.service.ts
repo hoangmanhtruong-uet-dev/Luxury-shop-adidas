@@ -250,7 +250,7 @@ export async function transitionOrderInTransaction(tx: TransactionClient, input:
     return tx.order.findUniqueOrThrow({ where: { id: existing.orderId } });
   }
 
-  await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('`order`')} WHERE id = ${input.orderId} FOR UPDATE`);
+  await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('"order"')} WHERE id = ${input.orderId} FOR UPDATE`);
   const order = await tx.order.findUnique({ where: { id: input.orderId } });
   if (!order) throw orderError('ORDER_NOT_FOUND', 'Order not found', 404);
   if (order.status === input.targetStatus) throw orderError('ORDER_STATUS_CONFLICT', 'Self-transition requires the original idempotency key', 409);

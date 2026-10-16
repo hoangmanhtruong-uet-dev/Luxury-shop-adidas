@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Chính Sách | MTRUONG-STORE',
-  description: 'Chính sách mua hàng, đổi trả, bảo hành, vận chuyển và bảo mật thông tin tại MTRUONG-STORE.',
+  title: 'Chính Sách',
+  description: 'Chính sách mua hàng, đổi trả, bảo hành, vận chuyển và bảo mật thông tin tại Cún-shop.',
 };
 
 const POLICIES = [
@@ -19,7 +19,7 @@ const POLICIES = [
         content: [
           'Sản phẩm còn nguyên seal, chưa kích hoạt, không có dấu hiệu sử dụng.',
           'Còn đủ phụ kiện, hộp, tài liệu kèm theo ban đầu.',
-          'Có hoá đơn mua hàng hoặc mã đơn hàng từ MTRUONG-STORE.',
+          'Có hoá đơn mua hàng hoặc mã đơn hàng từ Cún-shop.',
           'Thời gian yêu cầu đổi trả trong vòng 7 ngày kể từ ngày nhận hàng.',
         ],
       },
@@ -34,10 +34,10 @@ const POLICIES = [
       {
         heading: 'Quy trình đổi trả',
         content: [
-          'Bước 1: Liên hệ Hotline 1800 1234 56 hoặc email support@mtruong-store.vn.',
+          'Bước 1: Liên hệ Hotline 0968 544 769 hoặc email support@cun-shop.vn.',
           'Bước 2: Cung cấp mã đơn hàng, hình ảnh/video sản phẩm lỗi.',
           'Bước 3: Nhân viên xác nhận và cấp phiếu đổi trả trong vòng 24 giờ.',
-          'Bước 4: Gửi sản phẩm về địa chỉ kho hàng (MTRUONG-STORE thanh toán phí ship chiều về).',
+          'Bước 4: Gửi sản phẩm về địa chỉ kho hàng (Cún-shop thanh toán phí ship chiều về).',
           'Bước 5: Hoàn tiền hoặc gửi hàng đổi trong vòng 3-5 ngày làm việc.',
         ],
       },
@@ -48,14 +48,14 @@ const POLICIES = [
     emoji: '🛡️',
     title: 'Chính Sách Bảo Hành Chính Hãng',
     color: 'from-blue-600 to-indigo-600',
-    badge: 'BẢO HÀNH 12-24 THÁNG',
+    badge: 'BẢO HÀNH KEO – CHỈ 6 THÁNG',
     sections: [
       {
         heading: 'Thời gian bảo hành',
         content: [
-          'Điện tử & Công nghệ (Laptop, điện thoại, tai nghe): 12 – 24 tháng tại trung tâm bảo hành ủy quyền.',
-          'Đồ gia dụng thông minh: 12 tháng bảo hành tại nhà (pick-up & deliver miễn phí).',
-          'Thời trang & Làm đẹp: Bảo hành 7 ngày đổi trả sản phẩm lỗi kỹ thuật.',
+          'Giày đá bóng chính hãng (Nike, Adidas, Mizuno, Puma...): bảo hành keo – chỉ 6 tháng, đổi size miễn phí trong 30 ngày.',
+          'Hỗ trợ kiểm tra hàng chính hãng (check auth) trọn đời — phát hiện hàng fake đền 200% giá trị đơn hàng.',
+          'Phụ kiện bóng đá (bóng, tất, bó gối, găng thủ môn): bảo hành 7 ngày đổi trả với sản phẩm lỗi kỹ thuật.',
         ],
       },
       {
@@ -63,8 +63,8 @@ const POLICIES = [
         content: [
           'Hà Nội: Tòa nhà Keangnam Landmark, 72 Phạm Hùng, Cầu Giấy.',
           'TP.HCM: Tòa nhà Bitexco Financial Tower, 2 Hải Triều, Quận 1.',
-          'Hotline bảo hành: 1800 1234 56 (miễn phí, 24/7).',
-          'Đăng ký bảo hành điện tử qua App MTRUONG-STORE.',
+          'Hotline bảo hành: 0968 544 769 (miễn phí, 24/7).',
+          'Đăng ký bảo hành điện tử qua App Cún-shop.',
         ],
       },
       {
@@ -72,7 +72,7 @@ const POLICIES = [
         content: [
           'Sản phẩm còn trong thời hạn bảo hành, chưa hết hạn tem niêm phong.',
           'Không có dấu hiệu va đập, tiếp xúc nước, hoặc can thiệp bởi đơn vị sửa chữa ngoài.',
-          'Có phiếu bảo hành hoặc hóa đơn mua hàng từ MTRUONG-STORE.',
+          'Có phiếu bảo hành hoặc hóa đơn mua hàng từ Cún-shop.',
         ],
       },
     ],
@@ -106,7 +106,7 @@ const POLICIES = [
         content: [
           'Tra cứu đơn hàng real-time tại trang "Đơn hàng của tôi" sau khi đăng nhập.',
           'Nhận thông báo SMS & Email khi đơn hàng được xác nhận, đóng gói, và giao.',
-          'Hỗ trợ trực tiếp qua Hotline 1800 1234 56 (24/7, miễn phí).',
+          'Hỗ trợ trực tiếp qua Hotline 0968 544 769 (24/7, miễn phí).',
         ],
       },
     ],
@@ -168,7 +168,7 @@ const POLICIES = [
         content: [
           'Tất cả giao dịch được mã hóa SSL 256-bit và xác thực PCI-DSS Level 1.',
           'Hỗ trợ xác thực 2 lớp (OTP qua SMS/Email) khi thanh toán thẻ.',
-          'Không lưu trữ thông tin thẻ thanh toán trên hệ thống MTRUONG-STORE.',
+          'Không lưu trữ thông tin thẻ thanh toán trên hệ thống Cún-shop.',
         ],
       },
       {
@@ -194,7 +194,7 @@ export default function PolicyPage() {
             📋 TÀI LIỆU CHÍNH SÁCH
           </div>
           <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight">
-            Chính Sách <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-500">MTRUONG-STORE</span>
+            Chính Sách <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-500">Cún-shop</span>
           </h1>
           <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
             Cam kết minh bạch, rõ ràng và bảo vệ quyền lợi khách hàng trong mọi giao dịch. Cập nhật lần cuối: 01/03/2026.
@@ -269,11 +269,11 @@ export default function PolicyPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {[
               { q: 'Tôi có thể hủy đơn hàng không?', a: 'Có, bạn có thể hủy đơn hàng trước khi đơn được đóng gói (thường trong vòng 1-2 giờ sau khi đặt). Sau khi hàng đóng gói, cần áp dụng chính sách đổi trả.' },
-              { q: 'Sản phẩm có phải hàng chính hãng không?', a: 'MTRUONG-STORE cam kết 100% hàng chính hãng, có chứng nhận và xuất xứ rõ ràng. Hoàn tiền 200% nếu phát hiện hàng giả.' },
-              { q: 'Thanh toán bị lỗi, tiền đã bị trừ?', a: 'Nếu giao dịch lỗi nhưng tiền đã bị trừ, ngân hàng sẽ tự động hoàn lại trong 1-5 ngày làm việc. Liên hệ Hotline 1800 1234 56 để được hỗ trợ.' },
+              { q: 'Sản phẩm có phải hàng chính hãng không?', a: 'Cún-shop cam kết 100% hàng chính hãng, có chứng nhận và xuất xứ rõ ràng. Hoàn tiền 200% nếu phát hiện hàng giả.' },
+              { q: 'Thanh toán bị lỗi, tiền đã bị trừ?', a: 'Nếu giao dịch lỗi nhưng tiền đã bị trừ, ngân hàng sẽ tự động hoàn lại trong 1-5 ngày làm việc. Liên hệ Hotline 0968 544 769 để được hỗ trợ.' },
               { q: 'Làm thế nào để tích điểm thưởng?', a: 'Mỗi 100.000 ₫ chi tiêu = 1 điểm thưởng = 100 ₫ giảm giá cho lần mua tiếp theo. Điểm được cộng sau khi đơn hàng hoàn thành.' },
               { q: 'Có hỗ trợ xuất hóa đơn VAT không?', a: 'Có. Vui lòng ghi chú yêu cầu xuất hóa đơn VAT kèm mã số thuế khi đặt hàng. Hóa đơn sẽ được gửi qua email trong vòng 24 giờ sau khi giao hàng thành công.' },
-              { q: 'Chính sách riêng tư của tôi có được bảo vệ?', a: 'MTRUONG-STORE cam kết không chia sẻ thông tin khách hàng với bên thứ ba. Dữ liệu được mã hóa SSL 256-bit và tuân thủ Nghị định 13/2023/NĐ-CP.' },
+              { q: 'Chính sách riêng tư của tôi có được bảo vệ?', a: 'Cún-shop cam kết không chia sẻ thông tin khách hàng với bên thứ ba. Dữ liệu được mã hóa SSL 256-bit và tuân thủ Nghị định 13/2023/NĐ-CP.' },
             ].map((faq, idx) => (
               <div key={idx} className="bg-[#1E293B] border border-slate-700 rounded-2xl p-6 space-y-3 hover:border-slate-600 transition">
                 <h4 className="text-sm font-bold text-white flex items-start gap-2">
@@ -294,11 +294,11 @@ export default function PolicyPage() {
               <span className="text-3xl">🤝</span>
               <h2 className="text-2xl sm:text-3xl font-black">Bạn cần hỗ trợ thêm?</h2>
               <p className="text-white/90 text-sm max-w-lg mx-auto leading-relaxed">
-                Đội ngũ CSKH MTRUONG-STORE sẵn sàng hỗ trợ bạn 24/7. Liên hệ ngay để được tư vấn miễn phí.
+                Đội ngũ CSKH Cún-shop sẵn sàng hỗ trợ bạn 24/7. Liên hệ ngay để được tư vấn miễn phí.
               </p>
               <div className="flex flex-wrap justify-center gap-4 pt-2">
-                <a href="tel:18001234" className="px-6 py-3 bg-white text-slate-900 font-black rounded-full text-sm hover:bg-amber-300 transition shadow-lg">
-                  📞 Hotline 1800 1234 56
+                <a href="tel:0968544769" className="px-6 py-3 bg-white text-slate-900 font-black rounded-full text-sm hover:bg-amber-300 transition shadow-lg">
+                  📞 Hotline 0968 544 769
                 </a>
                 <Link href="/products" className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-full text-sm transition backdrop-blur-md border border-white/30">
                   🛍️ Tiếp tục mua sắm

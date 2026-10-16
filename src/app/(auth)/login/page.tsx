@@ -190,14 +190,18 @@ export default function LoginPage() {
                 type="button" 
                 onClick={async () => {
                   addToast('Đang kết nối với Google... 🌐');
-                  const { error } = await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                      redirectTo: `${window.location.origin}/callback`
+                  try {
+                    const { error } = await supabase.auth.signInWithOAuth({
+                      provider: 'google',
+                      options: {
+                        redirectTo: `${window.location.origin}/callback`
+                      }
+                    });
+                    if (error) {
+                      addToast('Không thể kết nối Google: ' + error.message);
                     }
-                  });
-                  if (error) {
-                    addToast('Không thể kết nối Google: ' + error.message);
+                  } catch (err) {
+                    addToast('Không thể kết nối Google: ' + (err instanceof Error ? err.message : 'lỗi không xác định'));
                   }
                 }}
                 style={{ 

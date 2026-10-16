@@ -49,7 +49,13 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
       }, { status: error.statusCode });
     }
     console.error('[PATCH /api/admin/users/:id/balance]', error);
-    const message = error instanceof Error ? error.message : 'Server error';
-    return NextResponse.json({ error: message }, { status: 400 });
+    // Phase 3.4 (Warning W4): this endpoint mutates real wallet balances and
+    // previously returned `error.message` verbatim with status 400 — leaking
+    // Prisma/MySQL internals (P2025, deadlock text, host/port/database name) and
+    // mis-reporting server faults as client errors.
+    return NextResponse.json(
+      { error: { code: 'INTERNAL_SERVER_ERROR', message: 'Lỗi server' } },
+      { status: 500 },
+    );
   }
 }

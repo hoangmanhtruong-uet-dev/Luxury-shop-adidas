@@ -43,35 +43,75 @@ export function hashRateLimitIdentifier(identifier: string, windowMs: number): s
 
 export type FullRateLimitBackend = Required<Pick<RateLimitBackend, 'increment' | 'get' | 'reset'>>;
 
+const DEADLOCK_ATTEMPTS = 3;
+
+/** True for Prisma deadlock / lock-wait-timeout errors. */
+function isDeadlock(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    (error.code === 'P2034' || error.code === 'P2024')
+  );
+}
+
+/**
+ * Retries a bucket write on deadlock with jittered backoff. Without this, a
+ * burst of concurrent requests on the same bucket (e.g. launch-minute login
+ * traffic collapsing onto few buckets) surfaces as a 503 via the fail-closed
+ * default instead of succeeding on retry.
+ */
+async function withRetryOnDeadlock<T>(work: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < DEADLOCK_ATTEMPTS; attempt += 1) {
+    try {
+      return await work();
+    } catch (error) {
+      if (!isDeadlock(error)) throw error;
+      lastError = error;
+      const backoffMs = Math.min(500, 50 * 2 ** attempt) + Math.floor(Math.random() * 50);
+      await new Promise((resolve) => setTimeout(resolve, backoffMs));
+    }
+  }
+  throw lastError;
+}
+
 export const databaseRateLimitBackend: FullRateLimitBackend = {
   async increment(keyHash, now, windowMs) {
     const nextExpiry = new Date(now.getTime() + windowMs);
 
-    return prisma.$transaction(async (tx) => {
-      // This statement takes an exclusive row lock. Assignment order is intentional:
-      // every predicate observes the old expiresAt before expiresAt is replaced.
-      await tx.$executeRaw(Prisma.sql`
-        INSERT INTO rate_limit_bucket
-          (keyHash, count, windowStart, expiresAt, createdAt, updatedAt)
-        VALUES
-          (${keyHash}, 1, ${now}, ${nextExpiry}, ${now}, ${now})
-        ON DUPLICATE KEY UPDATE
-          count = IF(expiresAt <= ${now}, 1, count + 1),
-          windowStart = IF(expiresAt <= ${now}, ${now}, windowStart),
-          expiresAt = IF(expiresAt <= ${now}, ${nextExpiry}, expiresAt),
-          updatedAt = ${now}
-      `);
+    // OP5: the INSERT..ON DUPLICATE + SELECT FOR UPDATE pair deadlocks under
+    // burst contention (two requests racing the same bucket). The other P2034
+    // retry loops in the codebase all back off; this one previously threw
+    // straight into the fail-closed path (503 on login during a DB stall).
+    return withRetryOnDeadlock(() =>
+      prisma.$transaction(async (tx) => {
+        // This statement takes an exclusive row lock. Assignment order is intentional:
+        // every predicate observes the old expiresAt before expiresAt is replaced.
+        // Postgres has no IF() and no ON DUPLICATE KEY UPDATE. The CASE expression
+        // below reproduces the exact window-reset semantics; camelCase identifiers
+        // must be double-quoted (unquoted folds to lowercase in Postgres).
+        await tx.$executeRaw(Prisma.sql`
+          INSERT INTO rate_limit_bucket
+            ("keyHash", count, "windowStart", "expiresAt", "createdAt", "updatedAt")
+          VALUES
+            (${keyHash}, 1, ${now}, ${nextExpiry}, ${now}, ${now})
+          ON CONFLICT ("keyHash") DO UPDATE SET
+            count = CASE WHEN rate_limit_bucket."expiresAt" <= ${now} THEN 1 ELSE rate_limit_bucket.count + 1 END,
+            "windowStart" = CASE WHEN rate_limit_bucket."expiresAt" <= ${now} THEN ${now} ELSE rate_limit_bucket."windowStart" END,
+            "expiresAt" = CASE WHEN rate_limit_bucket."expiresAt" <= ${now} THEN ${nextExpiry} ELSE rate_limit_bucket."expiresAt" END,
+            "updatedAt" = ${now}
+        `);
 
-      const rows = await tx.$queryRaw<Array<{ count: number; expiresAt: Date }>>(Prisma.sql`
-        SELECT count, expiresAt
-        FROM rate_limit_bucket
-        WHERE keyHash = ${keyHash}
-        FOR UPDATE
-      `);
-      const bucket = rows[0];
-      if (!bucket) throw new Error('Rate-limit bucket was not persisted');
-      return { count: Number(bucket.count), reset: new Date(bucket.expiresAt).getTime() };
-    });
+        const rows = await tx.$queryRaw<Array<{ count: number; expiresAt: Date }>>(Prisma.sql`
+          SELECT count, "expiresAt"
+          FROM rate_limit_bucket
+          WHERE "keyHash" = ${keyHash}
+          FOR UPDATE
+        `);
+        const bucket = rows[0];
+        if (!bucket) throw new Error('Rate-limit bucket was not persisted');
+        return { count: Number(bucket.count), reset: new Date(bucket.expiresAt).getTime() };
+      }),
+    );
   },
 
 
@@ -130,7 +170,10 @@ export function createFailureCounter(
         const bucket = await withTimeout(backend.get(keyHash, new Date(nowMs)), options.backendTimeoutMs);
         const count = bucket?.count ?? 0;
         const reset = bucket?.reset ?? nowMs + options.windowMs;
-        const success = count < options.max;
+        // OP5: was `count < options.max`, one request stricter than the
+        // limiter's `count <= options.max` below. Unified on `<=` so both paths
+        // admit exactly `max` requests per window.
+        const success = count <= options.max;
         return {
           success,
           limit: options.max,

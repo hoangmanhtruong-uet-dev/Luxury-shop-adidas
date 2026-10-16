@@ -91,8 +91,12 @@ export class OutboxDispatcher {
         where: { status: 'PROCESSING', lockedUntil: { lt: now } },
         data: { status: 'RETRY', nextAttemptAt: now, lockedAt: null, lockedUntil: null, lockedBy: null, lastErrorCode: 'STALE_LEASE' },
       });
+      // NOTE (postgres): MySQL's FORCE INDEX hint has no equivalent here and is
+      // intentionally omitted — the planner uses outbox_status_next_idx via the
+      // WHERE + ORDER BY shape. If claim latency regresses, check
+      // pg_stat_user_tables / EXPLAIN before reaching for planner hacks.
       const rows = await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
-        SELECT id FROM outbox_event FORCE INDEX (outbox_status_next_idx)
+        SELECT id FROM outbox_event
         WHERE status IN ('PENDING', 'RETRY')
           AND nextAttemptAt <= ${now}
           AND (lockedUntil IS NULL OR lockedUntil < ${now})
@@ -206,7 +210,23 @@ export class OutboxDispatcher {
         else result.deadLettered += 1;
       }
     };
-    await Promise.all(Array.from({ length: Math.min(this.concurrency, claim.events.length) }, () => work()));
+    // Phase 4.3: this was `Promise.all`, which rejects on the FIRST failure and
+    // abandons the other `concurrency - 1` workers mid-flight. Their
+    // `renewal.stop()` never ran, their leases stayed held for up to
+    // OUTBOX_LEASE_SECONDS, and the throw propagated to `OutboxWorker.poll()`,
+    // which set `state = 'failed'` and STOPPED THE WORKER PERMANENTLY — a single
+    // lease race (e.g. a `P2034` deadlock) took the whole consumer down.
+    // `allSettled` lets every claimed event finish.
+    const settled = await Promise.allSettled(
+      Array.from({ length: Math.min(this.concurrency, claim.events.length) }, () => work()),
+    );
+    for (const outcome of settled) {
+      if (outcome.status === 'rejected') {
+        logger.error('outbox.dispatch_worker_failed', outcome.reason, {
+          workerId: this.options.workerId,
+        });
+      }
+    }
     logger.info('outbox.dispatch_batch', { workerId: this.options.workerId, ...result });
     return result;
   }

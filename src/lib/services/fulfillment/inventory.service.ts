@@ -22,12 +22,12 @@ function positiveInt(value: string | undefined, fallback: number, maximum: numbe
 }
 
 async function lockOrder(tx: TransactionClient, orderId: string): Promise<void> {
-  await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('`order`')} WHERE id = ${orderId} FOR UPDATE`);
+  await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`SELECT id FROM ${Prisma.raw('"order"')} WHERE id = ${orderId} FOR UPDATE`);
 }
 
 async function lockedReservations(tx: TransactionClient, orderId: string) {
   await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
-    SELECT id FROM inventory_reservation WHERE orderId = ${orderId} ORDER BY productId, id FOR UPDATE`);
+    SELECT id FROM inventory_reservation WHERE "orderId" = ${orderId} ORDER BY "productId", id FOR UPDATE`);
   return tx.inventoryReservation.findMany({ where: { orderId }, orderBy: [{ productId: 'asc' }, { id: 'asc' }] });
 }
 
@@ -78,8 +78,8 @@ export class InventoryService {
     const sorted = [...items].sort((left, right) => left.productId.localeCompare(right.productId));
     for (const item of sorted) {
       const affected = await tx.$executeRaw(Prisma.sql`
-        UPDATE product SET reservedQuantity = reservedQuantity + ${item.quantity}
-        WHERE id = ${item.productId} AND stockQuantity - reservedQuantity >= ${item.quantity}`);
+        UPDATE product SET "reservedQuantity" = "reservedQuantity" + ${item.quantity}
+        WHERE id = ${item.productId} AND "stockQuantity" - "reservedQuantity" >= ${item.quantity}`);
       if (affected !== 1) {
         const error = new ConflictError(`Product ${item.productId} does not have enough available stock`);
         error.code = 'OUT_OF_STOCK';
@@ -147,9 +147,9 @@ export class InventoryService {
     if (fulfillment.order.paymentMethod !== 'COD') throw new ValidationError('COD inventory consumption requires a COD order');
     await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
       SELECT r.id FROM inventory_reservation r
-      JOIN orderitem oi ON oi.id = r.orderItemId
-      WHERE oi.fulfillmentId = ${fulfillmentId}
-      ORDER BY r.productId, r.id FOR UPDATE`);
+      JOIN orderitem oi ON oi.id = r."orderItemId"
+      WHERE oi."fulfillmentId" = ${fulfillmentId}
+      ORDER BY r."productId", r.id FOR UPDATE`);
     const reservations = await tx.inventoryReservation.findMany({
       where: { orderItem: { fulfillmentId } },
       orderBy: [{ productId: 'asc' }, { id: 'asc' }],
@@ -265,26 +265,26 @@ export class InventoryReconciliationService {
   static async auditAnomalies(now = new Date(), limit = inventoryConfig.reconciliationBatchSize): Promise<InventoryAnomaly[]> {
     const boundedLimit = Math.max(1, Math.min(limit, 5000));
     const anomalies = await prisma.$queryRaw<InventoryAnomaly[]>(Prisma.sql`
-      SELECT 'ACTIVE_ON_PAID_ORDER' AS type, r.orderId, r.id AS reservationId, r.productId
-      FROM inventory_reservation r JOIN ${Prisma.raw('`order`')} o ON o.id = r.orderId
-      WHERE r.status = 'ACTIVE' AND o.paymentStatus IN ('paid', 'refunded')
+      SELECT 'ACTIVE_ON_PAID_ORDER' AS type, r."orderId", r.id AS reservationId, r."productId"
+      FROM inventory_reservation r JOIN ${Prisma.raw('"order"')} o ON o.id = r."orderId"
+      WHERE r.status = 'ACTIVE' AND o."paymentStatus" IN ('paid', 'refunded')
       UNION ALL
-      SELECT 'CONSUMED_ON_UNPAID_ORDER', r.orderId, r.id, r.productId
-      FROM inventory_reservation r JOIN ${Prisma.raw('`order`')} o ON o.id = r.orderId
-      WHERE r.status = 'CONSUMED' AND o.paymentStatus NOT IN ('paid', 'refunded')
+      SELECT 'CONSUMED_ON_UNPAID_ORDER', r."orderId", r.id, r."productId"
+      FROM inventory_reservation r JOIN ${Prisma.raw('"order"')} o ON o.id = r."orderId"
+      WHERE r.status = 'CONSUMED' AND o."paymentStatus" NOT IN ('paid', 'refunded')
       UNION ALL
-      SELECT 'OVERDUE_ACTIVE', r.orderId, r.id, r.productId
-      FROM inventory_reservation r WHERE r.status = 'ACTIVE' AND r.expiresAt <= ${now}
+      SELECT 'OVERDUE_ACTIVE', r."orderId", r.id, r."productId"
+      FROM inventory_reservation r WHERE r.status = 'ACTIVE' AND r."expiresAt" <= ${now}
       UNION ALL
       SELECT 'INVALID_PRODUCT_COUNTS', NULL, NULL, p.id
-      FROM product p WHERE p.stockQuantity < 0 OR p.reservedQuantity < 0 OR p.reservedQuantity > p.stockQuantity
+      FROM product p WHERE p."stockQuantity" < 0 OR p."reservedQuantity" < 0 OR p."reservedQuantity" > p."stockQuantity"
       UNION ALL
-      SELECT 'SUCCEEDED_PAYMENT_ORDER_UNPAID', p.orderId, NULL, NULL
-      FROM payment p JOIN ${Prisma.raw('`order`')} o ON o.id = p.orderId
-      WHERE p.status = 'completed' AND o.paymentStatus NOT IN ('paid', 'refunded')
+      SELECT 'SUCCEEDED_PAYMENT_ORDER_UNPAID', p."orderId", NULL, NULL
+      FROM payment p JOIN ${Prisma.raw('"order"')} o ON o.id = p."orderId"
+      WHERE p.status = 'completed' AND o."paymentStatus" NOT IN ('paid', 'refunded')
       UNION ALL
-      SELECT 'EXPIRED_ORDER_ACTIVE', r.orderId, r.id, r.productId
-      FROM inventory_reservation r JOIN ${Prisma.raw('`order`')} o ON o.id = r.orderId
+      SELECT 'EXPIRED_ORDER_ACTIVE', r."orderId", r.id, r."productId"
+      FROM inventory_reservation r JOIN ${Prisma.raw('"order"')} o ON o.id = r."orderId"
       WHERE o.status = 'expired' AND r.status = 'ACTIVE'
       LIMIT ${boundedLimit}`);
     for (const anomaly of anomalies) logger.error('inventory.reconciliation_anomaly', undefined, { ...anomaly });

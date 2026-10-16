@@ -1,1 +1,0 @@
-ALTER TABLE `user` ADD COLUMN `paymentPinHash` VARCHAR(191) NULL;

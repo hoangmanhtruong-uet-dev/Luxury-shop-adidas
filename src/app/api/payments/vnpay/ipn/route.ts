@@ -12,9 +12,15 @@
  *   { RspCode: "02", Message: "..." }         — order đã xử lý
  */
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { getVNPayProvider } from '@/lib/services/payment/vnpay-provider';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { PaymentService } from '@/lib/services/payment/payment.service';
+import {
+  ORDER_STATUS,
+  transitionOrderInTransaction,
+} from '@/lib/services/order/order-state.service';
 
 export const runtime = 'nodejs';
 
@@ -55,47 +61,76 @@ export async function POST(req: NextRequest) {
     }
 
     // Kiểm tra đã xử lý chưa
-    if (order.paymentStatus === 'completed') {
+    if (order.paymentStatus === 'completed' || order.status === ORDER_STATUS.PAID) {
       logger.info('vnpay.ipn.already_processed', { txnRef: result.txnRef });
       return NextResponse.json({ RspCode: '02', Message: 'Order already confirmed' });
     }
 
-    if (result.isSuccess) {
-      // Cập nhật order thành đã thanh toán
-      await prisma.order.update({
+    // Phase 1.6: the previous version wrote `paymentStatus`/`status` directly,
+    // which skipped inventory consumption, the wallet ledger, the payment record
+    // and the ORDER_PAID outbox event. It also left the order with no transition
+    // history, so the reconciliation job reported a permanent mismatch.
+    await prisma.$transaction(async (tx) => {
+      // Lock the row so two concurrent IPN deliveries cannot both proceed.
+      await tx.$queryRaw<Array<{ id: string }>>(
+        Prisma.sql`SELECT id FROM ${Prisma.raw('"order"')} WHERE id = ${order.id} FOR UPDATE`,
+      );
+      const fresh = await tx.order.findUnique({
         where: { id: order.id },
-        data: {
-          paymentStatus: 'completed',
-          status: 'paid',
-          paidAt: new Date(),
-        },
+        select: { status: true, paymentStatus: true },
       });
+      if (!fresh) throw new Error(`Order ${order.id} disappeared during IPN handling`);
+      if (fresh.paymentStatus === 'completed' || fresh.status === ORDER_STATUS.PAID) return;
 
-      logger.info('vnpay.ipn.payment_confirmed', {
-        orderId: order.id,
-        amount: result.amount,
-        transactionNo: result.transactionNo,
-        bankCode: result.bankCode,
-      });
-    } else {
-      // Thanh toán thất bại
-      await prisma.order.update({
-        where: { id: order.id },
-        data: {
-          paymentStatus: 'failed',
-          status: 'payment_failed',
-        },
-      });
+      if (result.isSuccess) {
+        await PaymentService.recordWebhookSuccess(tx, {
+          orderId: order.id,
+          provider: 'VNPAY',
+          providerEventId: String(result.transactionNo ?? result.txnRef),
+        });
+        await transitionOrderInTransaction(tx, {
+          orderId: order.id,
+          targetStatus: ORDER_STATUS.PAID,
+          actor: { type: 'PAYMENT_WEBHOOK', provider: 'VNPAY' },
+          reason: 'VNPay payment confirmed',
+          idempotencyKey: `vnpay:${result.transactionNo ?? result.txnRef}:paid`,
+        });
+        await tx.order.update({
+          where: { id: order.id },
+          data: { paymentStatus: 'completed', paidAt: new Date() },
+        });
 
-      logger.warn('vnpay.ipn.payment_failed', {
-        orderId: order.id,
-        responseCode: result.responseCode,
-      });
-    }
+        logger.info('vnpay.ipn.payment_confirmed', {
+          orderId: order.id,
+          amount: result.amount,
+          transactionNo: result.transactionNo,
+          bankCode: result.bankCode,
+        });
+      } else {
+        await transitionOrderInTransaction(tx, {
+          orderId: order.id,
+          targetStatus: ORDER_STATUS.PAYMENT_FAILED,
+          actor: { type: 'PAYMENT_WEBHOOK', provider: 'VNPAY' },
+          reason: 'VNPay payment failed',
+          idempotencyKey: `vnpay:${result.transactionNo ?? result.txnRef}:failed`,
+        });
+        await tx.order.update({
+          where: { id: order.id },
+          data: { paymentStatus: 'failed' },
+        });
+
+        logger.warn('vnpay.ipn.payment_failed', {
+          orderId: order.id,
+          responseCode: result.responseCode,
+        });
+      }
+    });
 
     return NextResponse.json({ RspCode: '00', Message: 'Confirmed' });
   } catch (error) {
     logger.error('vnpay.ipn.error', error);
+    // RspCode 99 makes VNPay retry. The success path is now idempotent, so a
+    // retry after a partial failure is safe.
     return NextResponse.json({ RspCode: '99', Message: 'Unknown error' });
   }
 }

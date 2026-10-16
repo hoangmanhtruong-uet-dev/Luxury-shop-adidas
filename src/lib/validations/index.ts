@@ -19,12 +19,25 @@ export const currencySchema = z.unknown().optional().transform((value, ctx) => {
   }
 });
 
+/**
+ * Phase 2.1 (defence in depth against stored XSS).
+ *
+ * Seller-controlled free text is embedded into a JSON-LD <script> block on the
+ * product page. Rejecting raw HTML metacharacters at the write boundary means a
+ * malicious catalogue entry can never terminate the script element, even if some
+ * future render site forgets to escape.
+ */
+const noHtmlMarkup = z.string().refine(
+  value => !/[<>]/.test(value),
+  'Ký tự < và > không được phép',
+);
+
 export const productBaseSchema = z.object({
-  name: z.string().min(2, 'Tên sản phẩm phải có ít nhất 2 ký tự'),
+  name: noHtmlMarkup.pipe(z.string().min(2, 'Tên sản phẩm phải có ít nhất 2 ký tự')),
   price: moneyInputSchema({ allowZero: false, field: 'price' }),
   originalPrice: moneyInputSchema({ field: 'originalPrice' }).nullable().optional(),
   currency: currencySchema,
-  description: z.string().min(10, 'Mô tả phải có ít nhất 10 ký tự'),
+  description: noHtmlMarkup.pipe(z.string().min(10, 'Mô tả phải có ít nhất 10 ký tự')),
   categoryId: z.string().min(1, 'Vui lòng chọn danh mục'),
   image: z.string().optional().nullable(),
   sku: z.string().trim().min(3).max(64).regex(/^[A-Za-z0-9_-]+$/).transform(value => value.toUpperCase()).optional(),

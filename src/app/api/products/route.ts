@@ -15,6 +15,16 @@ export async function GET(req: Request) {
     const search = searchParams.get('search');
     const sortBy = searchParams.get('sortBy') || 'createdAt';
     const direction: Prisma.SortOrder = searchParams.get('order') === 'asc' ? 'asc' : 'desc';
+
+    // Phase 3.2 (Critical #15): this endpoint previously hard-coded `take: 20`
+    // with no `skip`/cursor and never read a page parameter, so the storefront
+    // could only ever reach the first 20 products — 1 980 of the seeded 2 000
+    // catalogue was unreachable. `limit` is capped so a caller cannot request an
+    // unbounded page and force the server to serialise the whole table.
+    const page = Math.max(1, toPositiveInt(searchParams.get('page'), 1));
+    const limit = Math.min(MAX_PAGE_SIZE, Math.max(1, toPositiveInt(searchParams.get('limit'), 20)));
+    const skip = (page - 1) * limit;
+
     const where: Prisma.ProductWhereInput = { deletedAt: null };
     if (category && category !== 'Tất cả') where.categoryRef = { name: category };
     if (search) {
@@ -28,17 +38,47 @@ export async function GET(req: Request) {
     const validSortFields = new Set(['price', 'rating', 'name', 'createdAt']);
     const sortField = validSortFields.has(sortBy) ? sortBy : 'createdAt';
     const orderBy = { [sortField]: direction } as Prisma.ProductOrderByWithRelationInput;
-    const products = await prisma.product.findMany({ where, orderBy, include: { categoryRef: true, images: true }, take: 20 });
+
+    const [products, total] = await prisma.$transaction([
+      prisma.product.findMany({
+        where,
+        orderBy,
+        include: { categoryRef: true, images: true },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count({ where }),
+    ]);
+
     const normalizedProducts = products.map(product => ({
       ...product,
       category: product.categoryRef?.name ?? '',
       image: product.image || product.images[0]?.url || getCategoryProductImage(product.categoryRef?.name),
     }));
-    return NextResponse.json(serializeMoneyFields(normalizedProducts));
+
+    return NextResponse.json(serializeMoneyFields({
+      products: normalizedProducts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / limit)),
+        hasNextPage: skip + products.length < total,
+      },
+    }));
   } catch (error) {
     console.error('[GET /api/products]', error);
     return NextResponse.json({ error: 'Lỗi khi lấy danh sách sản phẩm' }, { status: 500 });
   }
+}
+
+const MAX_PAGE_SIZE = 50;
+
+function toPositiveInt(raw: string | null, fallback: number): number {
+  if (raw === null) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) return fallback;
+  return parsed;
 }
 
 export async function POST(req: Request) {

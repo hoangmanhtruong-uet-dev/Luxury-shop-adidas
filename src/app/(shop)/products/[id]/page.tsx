@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter, notFound } from 'next/navigation';
 import { formatPrice } from '@/lib/utils';
 import { compareMoneyStrings, percentageOff } from '@/lib/utils/client-money';
 import { useState, useEffect, useTransition } from 'react';
@@ -18,6 +18,9 @@ import {
   FiMessageSquare, FiFileText, FiArrowRight
 } from 'react-icons/fi';
 import ProductReviews from '@/components/shop/ProductReviews';
+import { escapeJsonForHtmlScript } from '@/lib/utils/json-script';
+import { extractProducts } from '@/lib/api/products-response';
+import { recordProductView } from '@/components/home/RecentlyViewed';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -30,7 +33,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [selectedColor, setSelectedColor] = useState('Matte Black (Đen mờ Carbon)');
+  const [selectedColor, setSelectedColor] = useState('Đen / Xanh đen');
   const [activeTab, setActiveTab] = useState<'specs' | 'highlights' | 'reviews' | 'warranty'>('specs');
   const [isLiked, setIsLiked] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -63,13 +66,20 @@ export default function ProductDetailPage() {
       })
       .then(data => {
         setProduct(data);
+        // Phase 3 — feed the "recently viewed" rail on the homepage.
+        if (data && typeof data.id === 'string') {
+          recordProductView({
+            id: data.id,
+            name: data.name ?? 'Sản phẩm',
+            image: data.image ?? data.images?.[0]?.url,
+            price: data.price ?? 0,
+          });
+        }
         if (data.category) {
-          fetch(`/api/products?category=${encodeURIComponent(data.category)}`)
+          fetch(`/api/products?category=${encodeURIComponent(data.category)}&limit=12`)
             .then(r => r.json())
             .then(list => {
-              if (Array.isArray(list)) {
-                setRelatedProducts(list.filter((p: Product) => p.id !== data.id).slice(0, 4));
-              }
+              setRelatedProducts(extractProducts(list).filter((p: Product) => p.id !== data.id).slice(0, 4));
             })
             .catch(() => setRelatedProducts([]));
         }
@@ -131,17 +141,14 @@ export default function ProductDetailPage() {
     );
   }
 
+  // Phase 4.1: the previous branch rendered "Sản phẩm không tồn tại" with an HTTP
+  // 200. That is a soft 404: Google indexes an unbounded pool of 200-status
+  // "not found" pages and wastes crawl budget. `notFound()` emits a real 404 and
+  // renders src/app/not-found.tsx.
+  // Reached only once `loading` is false, so a transient fetch error is not
+  // mis-reported as a missing product.
   if (!product) {
-    return (
-      <div className="min-h-screen bg-[#0B1120] text-slate-200 flex flex-col items-center justify-center p-8">
-        <span className="text-6xl mb-4">😞</span>
-        <h2 className="text-2xl font-bold text-white mb-2">Sản phẩm không tồn tại</h2>
-        <p className="text-slate-400 mb-6">Sản phẩm này có thể đã bị xóa hoặc không còn khả dụng.</p>
-        <Link href="/products" className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full transition">
-          ← Quay lại cửa hàng
-        </Link>
-      </div>
-    );
+    notFound();
   }
 
   const availableStock = getAvailableStock(product);
@@ -163,7 +170,8 @@ export default function ProductDetailPage() {
     }
     startTransition(() => {
       addItem(product, qty);
-      addToast(`Đã thêm ${qty} x ${product.name} vào giỏ hàng! 🛒`);
+      const total = useCartStore.getState().getItemCount();
+      addToast(`Đã thêm ${qty} × ${product.name} (giỏ: ${total} món)`, 'success', { label: 'Xem giỏ', href: '/cart' });
     });
   };
 
@@ -203,7 +211,7 @@ export default function ProductDetailPage() {
       availability: availableStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       seller: {
         '@type': 'Organization',
-        name: 'MTRUONG-STORE',
+        name: 'Cún-shop',
       },
     },
     aggregateRating: {
@@ -215,9 +223,16 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#0B1120] text-slate-200 font-sans pb-16">
+      {/*
+        Phase 2.1 (Critical #8): JSON.stringify does NOT escape < > or &, so a
+        seller-supplied name/description containing "</script><script>..." would
+        terminate this element and execute arbitrary JS in every visitor's
+        browser (including admins). Escaping them as unicode escapes is
+        equivalent JSON but cannot break out of the script tag.
+      */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: escapeJsonForHtmlScript(JSON.stringify(jsonLd)) }}
       />
       
       {/* Top Breadcrumb & Flash Sale Ticker Bar */}
@@ -433,19 +448,22 @@ export default function ProductDetailPage() {
               <div className="space-y-1.5 pt-2">
                 <div className="flex justify-between text-[11px] font-bold">
                   <span className="text-orange-400 flex items-center gap-1">
-                    🔥 Đang bán rất chạy: Đã đặt trước 86%
+                    🔥 Tình trạng kho
                   </span>
-                  <span className="text-slate-400">Chỉ còn {availableStock} chiếc</span>
+                  <span className="text-slate-400">Còn {availableStock} chiếc</span>
                 </div>
                 <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                  <div className="h-full bg-gradient-to-r from-orange-500 to-rose-500 rounded-full w-[86%]"></div>
+                  <div
+                    className={`h-full rounded-full ${availableStock > 10 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' : 'bg-gradient-to-r from-orange-500 to-rose-500'}`}
+                    style={{ width: `${Math.min(100, Math.max(4, availableStock))}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
 
             {/* Short Description */}
             <p className="text-slate-300 text-sm leading-relaxed">
-              {product.description || 'Tai nghe không dây cao cấp trang bị công nghệ khử tiếng ồn chủ động Hybrid ANC 42dB. Đệm tai công nghệ bọc da Protein mềm mại ôm sát, hợp tính màng loa Dynamic 40mm tinh chỉnh chuẩn âm thanh audiophile.'}
+              {product.description || 'Giày đá bóng chính hãng với form ôm chân chuẩn người Việt, đế bám sân tốt và độ bền đã được kiểm chứng qua hàng ngàn trận phủi. Bảo hành keo – chỉ 6 tháng, đổi size miễn phí trong 30 ngày.'}
             </p>
 
             {/* Color Variant Selector */}
@@ -456,9 +474,9 @@ export default function ProductDetailPage() {
               </label>
               <div className="flex flex-wrap gap-3">
                 {[
-                  { name: 'Matte Black (Đen mờ Carbon)', color: 'bg-slate-900 border-slate-600' },
-                  { name: 'Space Gray', color: 'bg-slate-700 border-slate-500' },
-                  { name: 'Midnight Blue', color: 'bg-indigo-950 border-indigo-700' }
+                  { name: 'Đen / Xanh đen', color: 'bg-slate-900 border-slate-600' },
+                  { name: 'Trắng / Bạc', color: 'bg-slate-200 border-slate-400' },
+                  { name: 'Hồng / Đỏ', color: 'bg-rose-600 border-rose-400' }
                 ].map(variant => (
                   <button
                     key={variant.name}
@@ -560,42 +578,42 @@ export default function ProductDetailPage() {
             
             <div className="lg:col-span-7 space-y-6">
               <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-[10px] font-black uppercase rounded-full tracking-wider">
-                CÔNG NGHỆ TRIỆT ỒN TẦNG SÂU
+                KIỂM SOÁT BÓNG & BỨT TỐC
               </span>
 
               <h2 className="text-2xl sm:text-4xl font-black text-white leading-tight">
-                Tách biệt thế giới ồn ào. Hòa mình vào không gian âm nhạc thuần khiết.
+                Ôm chân như may đo. Bứt tốc và xử lý bóng tự tin trên mọi mặt sân.
               </h2>
 
               <p className="text-slate-300 text-sm leading-relaxed">
-                Trang bị hệ thống 4 micro kép thu và đảo pha sóng âm tần số thấp, Air Pro ANC nếp triệt đến 98% tiếng ồn động cơ máy bay, xe buýt và môi trường văn phòng. Cho bạn khoảng không tĩnh lặng để tập trung sáng tạo hoặc thưởng thức trọn vẹn từng dải âm trầm uy lực.
+                Upper ôm sát theo form chân Á Đông, đế đinh tối ưu độ bám giúp vào bóng và đổi hướng chắc chắn. Độ bền keo – chỉ đã được kiểm chứng qua hàng ngàn trận phủi, càng đá càng mềm.
               </p>
 
               <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-800">
                 <div>
-                  <p className="text-2xl sm:text-3xl font-black text-orange-400">42 dB</p>
-                  <p className="text-[10px] text-slate-400 uppercase font-semibold mt-1">Độ khử ồn ANC</p>
+                  <p className="text-2xl sm:text-3xl font-black text-orange-400">6 Tháng</p>
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold mt-1">Bảo hành keo – chỉ</p>
                 </div>
                 <div>
-                  <p className="text-2xl sm:text-3xl font-black text-white">40 Giờ</p>
-                  <p className="text-[10px] text-slate-400 uppercase font-semibold mt-1">Thời lượng pin nhất</p>
+                  <p className="text-2xl sm:text-3xl font-black text-white">30 Ngày</p>
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold mt-1">Đổi size miễn phí</p>
                 </div>
                 <div>
-                  <p className="text-2xl sm:text-3xl font-black text-white">40 mm</p>
-                  <p className="text-[10px] text-slate-400 uppercase font-semibold mt-1">Màng loa Dynamic PET</p>
+                  <p className="text-2xl sm:text-3xl font-black text-white">100%</p>
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold mt-1">Chính hãng, check auth</p>
                 </div>
               </div>
             </div>
 
             <div className="lg:col-span-5 relative h-64 sm:h-80 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80"
-                alt="Technology Banner"
+                src="/images/products/urban-sneakers.webp"
+                alt="Giày đá bóng Cún-shop"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
               <div className="absolute bottom-4 left-4 right-4 bg-slate-900/80 backdrop-blur-md p-3 rounded-xl border border-slate-700 text-xs font-semibold text-slate-200">
-                🎧 Giả lập âm thanh vòm 360° Spatial Audio sống động như tại phòng thu chuyên nghiệp.
+                ⚽ Hàng chính hãng 100% – bao check auth trọn đời, phát hiện fake đền 200% giá trị đơn hàng.
               </div>
             </div>
 
@@ -609,9 +627,9 @@ export default function ProductDetailPage() {
           <div className="flex items-center gap-2 overflow-x-auto border-b border-slate-800 pb-2">
             {[
               { id: 'specs', label: 'Thông Số Kỹ Thuật', icon: FiSliders },
-              { id: 'highlights', label: 'Đặc Điểm Nổi Bật & ANC', icon: FiZap },
-              { id: 'reviews', label: `Đánh Giá Từ Khách Hàng (${product.reviews || 286})`, icon: FiMessageSquare },
-              { id: 'warranty', label: 'Chính Sách & Bảo Hành VIP', icon: FiShield }
+              { id: 'highlights', label: 'Đặc Điểm Nổi Bật', icon: FiZap },
+              { id: 'reviews', label: `Đánh Giá Từ Khách Hàng (${product.reviews || 0})`, icon: FiMessageSquare },
+              { id: 'warranty', label: 'Chính Sách & Bảo Hành', icon: FiShield }
             ].map(tab => {
               const Icon = tab.icon;
               return (
@@ -640,29 +658,29 @@ export default function ProductDetailPage() {
                 {/* Tech Specs Block 1 */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
-                    <span className="text-orange-400">⚙️</span> Kết Nối & Xử Lý Tín Hiệu
+                    <span className="text-orange-400">⚙️</span> Chất Liệu & Form Dáng
                   </h3>
                   <table className="w-full text-xs">
                     <tbody className="divide-y divide-slate-800/60">
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold w-1/3">Phiên bản Bluetooth</td>
-                        <td className="py-2.5 text-white font-medium">Bluetooth 5.3 Low Latency (45ms)</td>
+                        <td className="py-2.5 text-slate-400 font-semibold w-1/3">Chất liệu upper</td>
+                        <td className="py-2.5 text-white font-medium">Da tổng hợp cao cấp / da kangaroo (tuỳ phiên bản)</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold">Khoảng cách kết nối ổn định</td>
-                        <td className="py-2.5 text-white font-medium">Lên đến 15 mét không vật cản</td>
+                        <td className="py-2.5 text-slate-400 font-semibold">Form dáng</td>
+                        <td className="py-2.5 text-white font-medium">Ôm chân (snug fit), phù hợp chân người Việt</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold">Codecs hỗ trợ</td>
-                        <td className="py-2.5 text-white font-medium">LDAC, AAC, SBC, aptX Adaptive</td>
+                        <td className="py-2.5 text-slate-400 font-semibold">Lót trong</td>
+                        <td className="py-2.5 text-white font-medium">Đệm êm kháng khuẩn, tháo rời được</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold">Hỗ trợ kết nối kép</td>
-                        <td className="py-2.5 text-white font-medium">2 Thiết bị đồng thời (Dual-Pairing)</td>
+                        <td className="py-2.5 text-slate-400 font-semibold">Cổ giày</td>
+                        <td className="py-2.5 text-white font-medium">Cổ thấp linh hoạt hoặc cổ cao ôm (tuỳ mẫu mã)</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold">Cổng kết nối có dây</td>
-                        <td className="py-2.5 text-white font-medium">Jack 3.5mm AUX Audiophile mạ vàng</td>
+                        <td className="py-2.5 text-slate-400 font-semibold">Bảo hành</td>
+                        <td className="py-2.5 text-white font-medium">Bảo hành keo – chỉ 6 tháng, đổi size 30 ngày</td>
                       </tr>
                     </tbody>
                   </table>
@@ -671,29 +689,29 @@ export default function ProductDetailPage() {
                 {/* Tech Specs Block 2 */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
-                    <span className="text-emerald-400">🔋</span> Pin, Năng Lượng & Thiết Kế
+                    <span className="text-emerald-400">🏟️</span> Đế Giày & Mặt Sân
                   </h3>
                   <table className="w-full text-xs">
                     <tbody className="divide-y divide-slate-800/60">
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold w-1/3">Dung lượng Pin</td>
-                        <td className="py-2.5 text-white font-medium">750 mAh Lithium-Polymer cao cấp</td>
+                        <td className="py-2.5 text-slate-400 font-semibold w-1/3">Loại đinh</td>
+                        <td className="py-2.5 text-white font-medium">FG (cỏ tự nhiên) / TF (cỏ nhân tạo) / IC (futsal)</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold">Thời gian sử dụng bật ANC</td>
-                        <td className="py-2.5 text-white font-medium">32 giờ liên tục</td>
+                        <td className="py-2.5 text-slate-400 font-semibold">Chất liệu đế</td>
+                        <td className="py-2.5 text-white font-medium">TPU cao cấp, chống mài mòn, bám sân tốt</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold">Thời gian sử dụng tắt ANC</td>
-                        <td className="py-2.5 text-white font-medium">40 - 45 giờ</td>
+                        <td className="py-2.5 text-slate-400 font-semibold">Trọng lượng</td>
+                        <td className="py-2.5 text-white font-medium">~200 – 230g (size 42), siêu nhẹ khi bứt tốc</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold">Công nghệ sạc nhanh</td>
-                        <td className="py-2.5 text-white font-medium">Type-C Fast Charge (10 phút = 4 giờ nghe)</td>
+                        <td className="py-2.5 text-slate-400 font-semibold">Mặt sân phù hợp</td>
+                        <td className="py-2.5 text-white font-medium">Sân cỏ tự nhiên / nhân tạo / sân futsal</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 text-slate-400 font-semibold">Trọng lượng tai nghe</td>
-                        <td className="py-2.5 text-white font-medium">248 gram (Siêu nhẹ không áp lực tai)</td>
+                        <td className="py-2.5 text-slate-400 font-semibold">Size</td>
+                        <td className="py-2.5 text-white font-medium">39 – 45, tư vấn chọn size miễn phí qua hotline</td>
                       </tr>
                     </tbody>
                   </table>
@@ -704,15 +722,15 @@ export default function ProductDetailPage() {
 
             {activeTab === 'highlights' && (
               <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
-                <h3 className="text-base font-bold text-white">Điểm Nổi Bật Thiết Kế & Trải Nghiệm MTRUONG-STORE</h3>
+                <h3 className="text-base font-bold text-white">Điểm Nổi Bật Thiết Kế & Trải Nghiệm Cún-shop</h3>
                 <p>
-                  - Màng loa Dynamic 40mm cấu trúc tinh thể PET kép tái tạo âm bass sâu tới 15Hz và treble trong trẻo lên đến 40kHz.
+                  - Công nghệ upper mới nhất giúp kiểm soát bóng chắc chắn và bứt tốc tự tin trong mọi tình huống.
                 </p>
                 <p>
-                  - Đệm tai công nghệ Memory Foam bọc da Protein cao cấp đảm bảo sự thoải mái suốt 8 tiếng làm việc liên tục.
+                  - Đế đinh tối ưu độ bám sân, giảm trượt và hạn chế chấn thương cổ chân khi vào bóng.
                 </p>
                 <p>
-                  - Chế độ Xuyên Âm (Transparency Mode) cho phép lắng nghe cuộc trò chuyện xung quanh mà không cần tháo tai nghe.
+                  - Form ôm chân Á Đông, đi kèm chính sách đổi size miễn phí trong 30 ngày và tư vấn size qua hotline.
                 </p>
               </div>
             )}
@@ -723,8 +741,9 @@ export default function ProductDetailPage() {
 
             {activeTab === 'warranty' && (
               <div className="space-y-3 text-xs text-slate-300">
-                <h3 className="text-sm font-bold text-white">Chính Sách Bảo Hành VIP MTRUONG-STORE</h3>
-                <p>• Bảo hành 12 tháng chính hãng 1 đổi 1 trong 30 ngày nếu phát sinh lỗi phần cứng.</p>
+                <h3 className="text-sm font-bold text-white">Chính Sách Bảo Hành Cún-shop</h3>
+                <p>• Hàng chính hãng 100%, bao check auth trọn đời. Phát hiện hàng fake đền 200% giá trị đơn hàng.</p>
+                <p>• Bảo hành keo – chỉ 6 tháng; đổi size miễn phí trong 30 ngày nếu không vừa.</p>
                 <p>• Miễn phí giao nhận hàng bảo hành tận nhà trên toàn quốc.</p>
               </div>
             )}

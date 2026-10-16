@@ -124,18 +124,52 @@ export class OutboxWorker implements OutboxWorkerHandle {
   }
 
   private async runLoop(): Promise<void> {
-    try {
-      while (this.state === 'ready') {
-        await this.waitForNextPoll();
-        if (this.state !== 'ready') break;
+    // OP3: a single poll failure previously set `state = 'failed'` PERMANENTLY —
+    // the worker never polled again and, with no alerting wired up, the outbox
+    // silently stopped draining. Now each iteration is guarded individually: on
+    // error the worker records it, backs off (capped at 5 minutes with jitter),
+    // and keeps going. Only a deploy replaces this process.
+    let consecutiveFailures = 0;
+    while (this.state === 'ready') {
+      await this.waitForNextPoll();
+      if (this.state !== 'ready') break;
+      try {
         await this.poll();
         await this.heartbeat('ready');
+        consecutiveFailures = 0;
+      } catch (error: unknown) {
+        consecutiveFailures += 1;
+        this.lastErrorAt = new Date();
+        this.error = error instanceof Error ? error.message : 'Unknown worker failure';
+        logger.error('outbox.worker_failed', error, {
+          workerId: this.workerId,
+          consecutiveFailures,
+        });
+        await this.heartbeat('failed').catch((heartbeatError: unknown) =>
+          logger.error('outbox.heartbeat_failed', heartbeatError, { workerId: this.workerId }),
+        );
+        const backoffMs = Math.min(
+          5 * 60 * 1000,
+          this.pollIntervalMs * 2 ** Math.min(consecutiveFailures, 8),
+        );
+        await this.waitForBackoff(backoffMs);
       }
-    } catch (error: unknown) {
-      this.state = 'failed'; this.error = error instanceof Error ? error.message : 'Unknown worker failure'; this.lastErrorAt = new Date();
-      logger.error('outbox.worker_failed', error, { workerId: this.workerId });
-      await this.heartbeat('failed').catch((heartbeatError: unknown) => logger.error('outbox.heartbeat_failed', heartbeatError, { workerId: this.workerId }));
     }
+  }
+
+  /** Interruptible sleep so `stop()` never waits out a full backoff. */
+  private waitForBackoff(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        this.wakePoll = null;
+        resolve();
+      }, ms);
+      this.wakePoll = () => {
+        clearTimeout(timer);
+        this.wakePoll = null;
+        resolve();
+      };
+    });
   }
 
   async stop(): Promise<void> {

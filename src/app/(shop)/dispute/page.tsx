@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Quy Trình Giải Quyết Khiếu Nại | MTRUONG-STORE',
-  description: 'Quy trình giải quyết tranh chấp giữa Người mua và Nhà bán hàng tại Sàn TMĐT MTRUONG-STORE.',
+  title: 'Quy Trình Giải Quyết Khiếu Nại',
+  description: 'Quy trình giải quyết tranh chấp giữa Người mua và Nhà bán hàng tại Sàn TMĐT Cún-shop.',
 };
 
 export default function DisputePage() {
@@ -19,7 +19,7 @@ export default function DisputePage() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">1. Nguyên tắc giải quyết</h2>
             <p>
-              MTRUONG-STORE tôn trọng và nỗ lực bảo vệ quyền lợi hợp pháp của cả Người mua lẫn Nhà bán hàng. Mọi tranh chấp phát sinh trong quá trình giao dịch đều được ưu tiên thương lượng, hòa giải công bằng dựa trên bằng chứng thực tế.
+              Cún-shop tôn trọng và nỗ lực bảo vệ quyền lợi hợp pháp của cả Người mua lẫn Nhà bán hàng. Mọi tranh chấp phát sinh trong quá trình giao dịch đều được ưu tiên thương lượng, hòa giải công bằng dựa trên bằng chứng thực tế.
             </p>
           </section>
 
@@ -28,21 +28,21 @@ export default function DisputePage() {
             <ol className="list-decimal pl-5 space-y-2">
               <li><strong>Bước 1:</strong> Khách hàng tạo yêu cầu khiếu nại trực tiếp tại mục Chi tiết đơn hàng trong thời hạn 7 ngày kể từ khi nhận hàng.</li>
               <li><strong>Bước 2:</strong> Người bán có 48 giờ để phản hồi và đưa ra phương án xử lý (Đổi mới / Hoàn tiền / Bồi thường).</li>
-              <li><strong>Bước 3:</strong> Nếu hai bên không đạt được thỏa thuận, Ban quản trị MTRUONG-STORE sẽ can thiệp thẩm định bằng chứng và ra phán quyết cuối cùng.</li>
+              <li><strong>Bước 3:</strong> Nếu hai bên không đạt được thỏa thuận, Ban quản trị Cún-shop sẽ can thiệp thẩm định bằng chứng và ra phán quyết cuối cùng.</li>
             </ol>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">3. Kênh tiếp nhận hỗ trợ khẩn cấp</h2>
             <p>
-              Mọi thắc mắc hoặc phản ánh về hành vi gian lận xin vui lòng gửi về Hotline: <strong>1900 888 999</strong> hoặc Email: <strong>hotro@mtruong-store.vn</strong>.
+              Mọi thắc mắc hoặc phản ánh về hành vi gian lận xin vui lòng gửi về Hotline: <strong>0968 544 769</strong> hoặc Email: <strong>hotro@cun-shop.vn</strong>.
             </p>
           </section>
         </div>
 
         <div className="pt-6 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
           <Link href="/" className="hover:text-rose-400 font-bold transition">← Quay lại Trang chủ</Link>
-          <span>MTRUONG-STORE Resolution Center</span>
+          <span>Cún-shop Resolution Center</span>
         </div>
       </div>
     </div>

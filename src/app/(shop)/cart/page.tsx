@@ -14,51 +14,51 @@ import {
   FiGift, FiLock, FiChevronDown, FiChevronUp, FiShoppingCart
 } from 'react-icons/fi';
 
-// Phụ kiện bán kèm gợi ý
+// Phụ kiện bóng đá bán kèm gợi ý
 const CROSS_SELL_ITEMS = [
   {
     id: 'cs-1',
-    name: 'Cáp Sạc Nhanh Type-C 100W Bọc Dù',
-    price: 195000,
-    originalPrice: 300000,
-    discount: '-35%',
-    tag: 'TƯƠNG THÍCH CAO',
-    image: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=400&q=80',
-    category: 'Phụ kiện',
-    emoji: '🔌'
+    name: 'Bóng Động Lực UHV 2.07 Size 5',
+    price: 690000,
+    originalPrice: 850000,
+    discount: '-19%',
+    tag: 'BÁN CHẠY',
+    image: '/images/products/urban-sneakers.webp',
+    category: 'Phụ kiện bóng đá',
+    emoji: '⚽'
   },
   {
     id: 'cs-2',
-    name: 'Giá Đỡ Tai Nghe Kim Loại Nguyên Khối',
-    price: 350000,
-    originalPrice: 450000,
-    discount: '-22%',
-    tag: 'GỢI Ý TAI NGHE',
-    image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=400&q=80',
-    category: 'Phụ kiện',
-    emoji: '🎧'
+    name: 'Tất Chống Trượt Compressport',
+    price: 199000,
+    originalPrice: 250000,
+    discount: '-20%',
+    tag: 'THIẾT YẾU',
+    image: '/images/products/urban-sneakers.webp',
+    category: 'Phụ kiện bóng đá',
+    emoji: '🧦'
   },
   {
     id: 'cs-3',
-    name: 'Bàn Di Chuột Gaming XXL 900x400mm',
-    price: 240000,
-    originalPrice: 400000,
-    discount: '-40%',
-    tag: 'PHỤ KIỆN LAPTOP',
-    image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=400&q=80',
-    category: 'Gia dụng',
-    emoji: '🖥️'
+    name: 'Băng Quấn Cổ Chân Thể Thao',
+    price: 99000,
+    originalPrice: 150000,
+    discount: '-34%',
+    tag: 'CHỐNG CHẤN THƯƠNG',
+    image: '/images/products/urban-sneakers.webp',
+    category: 'Phụ kiện bóng đá',
+    emoji: '🩹'
   },
   {
     id: 'cs-4',
-    name: 'Hạt Cà Phê Arabica Cầu Đất 500g',
-    price: 180000,
-    originalPrice: 220000,
-    discount: '-18%',
-    tag: 'COMBO TIỆN LỢI',
-    image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=400&q=80',
-    category: 'Gia dụng',
-    emoji: '☕'
+    name: 'Túi Đựng Giày Đá Bóng',
+    price: 299000,
+    originalPrice: 390000,
+    discount: '-23%',
+    tag: 'TIỆN LỢI',
+    image: '/images/products/urban-sneakers.webp',
+    category: 'Phụ kiện bóng đá',
+    emoji: '🎒'
   }
 ];
 
@@ -66,9 +66,9 @@ export default function CartPage() {
   const { items, removeItem, updateQuantity, getTotal, clearCart, addItem } = useCartStore();
   const addToast = useToastStore(s => s.addToast);
 
-  const [couponCode, setCouponCode] = useState('MTRUONGMALL');
+  const [couponCode, setCouponCode] = useState('CUNMALL');
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>({
-    code: 'MTRUONGMALL',
+    code: 'CUNMALL',
     discount: 50000
   });
   const [noteOpen, setNoteOpen] = useState(false);
@@ -76,10 +76,10 @@ export default function CartPage() {
   const [savedForLater, setSavedForLater] = useState<any[]>([
     {
       id: 'saved-1',
-      name: 'Serum Vitamin C 20% Chuyên Sâu (30ml)',
-      price: 490000,
-      image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=400&q=80',
-      emoji: '💄'
+      name: 'Găng Tay Thủ Môn Adidas Chính Hãng',
+      price: 899000,
+      image: '/images/products/urban-sneakers.webp',
+      emoji: '🧤'
     }
   ]);
 
@@ -94,12 +94,12 @@ export default function CartPage() {
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
-    if (couponCode.toUpperCase() === 'MTRUONGMALL') {
-      setAppliedCoupon({ code: 'MTRUONGMALL', discount: 50000 });
-      addToast('Áp dụng mã MTRUONGMALL thành công (-50.000 ₫)! 🎉');
-    } else if (couponCode.toUpperCase() === 'MTRUONG100K') {
-      setAppliedCoupon({ code: 'MTRUONG100K', discount: 100000 });
-      addToast('Áp dụng mã MTRUONG100K thành công (-100.000 ₫)! 🎉');
+    if (couponCode.toUpperCase() === 'CUNMALL') {
+      setAppliedCoupon({ code: 'CUNMALL', discount: 50000 });
+      addToast('Áp dụng mã CUNMALL thành công (-50.000 ₫)! 🎉');
+    } else if (couponCode.toUpperCase() === 'CUN100K') {
+      setAppliedCoupon({ code: 'CUN100K', discount: 100000 });
+      addToast('Áp dụng mã CUN100K thành công (-100.000 ₫)! 🎉');
     } else {
       addToast('Mã giảm giá không hợp lệ hoặc đã hết hạn', 'error');
     }
@@ -161,7 +161,7 @@ export default function CartPage() {
         </div>
         <h2 className="text-3xl font-black text-white mb-2">Giỏ hàng của bạn đang trống</h2>
         <p className="text-slate-400 text-sm max-w-md text-center mb-8">
-          Hãy khám phá hàng ngàn sản phẩm công nghệ, thời trang và gia dụng cao cấp tại MTRUONG-STORE!
+          Hãy khám phá hàng trăm mẫu giày đá bóng chính hãng tại Cún-shop!
         </p>
         <Link href="/products" className="px-8 py-3.5 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white font-bold rounded-full transition shadow-lg shadow-orange-500/20">
           🛍️ Mua sắm ngay
@@ -637,7 +637,7 @@ export default function CartPage() {
             </div>
             <div>
               <h4 className="text-xs font-bold text-white">Hỗ trợ chuyên nghiệp 24/7</h4>
-              <p className="text-[11px] text-slate-400 mt-0.5">Đội ngũ kỹ thuật tư vấn tận tình qua Hotline 1800 1234 56</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Đội ngũ tư vấn chọn size tận tình qua Hotline 0968 544 769</p>
             </div>
           </div>
         </div>

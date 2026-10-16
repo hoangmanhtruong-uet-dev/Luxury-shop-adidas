@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Điều Khoản Sử Dụng Dịch Vụ | MTRUONG-STORE',
-  description: 'Quy chế hoạt động và điều khoản sử dụng sàn thương mại điện tử đa nhà bán MTRUONG-STORE.',
+  title: 'Điều Khoản Sử Dụng Dịch Vụ',
+  description: 'Quy chế hoạt động và điều khoản sử dụng sàn thương mại điện tử đa nhà bán Cún-shop.',
 };
 
 export default function TermsPage() {
@@ -19,7 +19,7 @@ export default function TermsPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">1. Giới thiệu chung</h2>
             <p>
-              Chào mừng bạn đến với <strong>MTRUONG-STORE</strong> — Sàn thương mại điện tử đa nhà bán hàng thuộc quyền sở hữu và vận hành hợp pháp bởi Công ty TNHH MTRUONG-STORE. Khi truy cập và mua sắm trên hệ thống, bạn đồng ý tuân thủ toàn bộ các điều khoản và điều kiện quy định tại đây.
+              Chào mừng bạn đến với <strong>Cún-shop</strong> — Sàn thương mại điện tử đa nhà bán hàng thuộc quyền sở hữu và vận hành hợp pháp bởi Công ty TNHH Cún-shop. Khi truy cập và mua sắm trên hệ thống, bạn đồng ý tuân thủ toàn bộ các điều khoản và điều kiện quy định tại đây.
             </p>
           </section>
 
@@ -44,21 +44,21 @@ export default function TermsPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">4. Thanh toán & Đối soát an toàn</h2>
             <p>
-              MTRUONG-STORE áp dụng cơ chế thanh toán tạm giữ và đối soát tự động qua cổng thanh toán PayOS. Tiền thanh toán của Người mua sẽ được tạm giữ an toàn cho đến khi đơn hàng giao thành công và hết thời hạn khiếu nại.
+              Cún-shop áp dụng cơ chế thanh toán tạm giữ và đối soát tự động qua cổng thanh toán PayOS. Tiền thanh toán của Người mua sẽ được tạm giữ an toàn cho đến khi đơn hàng giao thành công và hết thời hạn khiếu nại.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-white">5. Sở hữu trí tuệ</h2>
             <p>
-              Mọi bản quyền thương hiệu, logo, giao diện thiết kế, mã nguồn phần mềm và nội dung đăng tải trên MTRUONG-STORE đều thuộc tài sản độc quyền của chúng tôi. Nghiêm cấm mọi hành vi sao chép khi chưa có sự chấp thuận bằng văn bản.
+              Mọi bản quyền thương hiệu, logo, giao diện thiết kế, mã nguồn phần mềm và nội dung đăng tải trên Cún-shop đều thuộc tài sản độc quyền của chúng tôi. Nghiêm cấm mọi hành vi sao chép khi chưa có sự chấp thuận bằng văn bản.
             </p>
           </section>
         </div>
 
         <div className="pt-6 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
           <Link href="/" className="hover:text-orange-400 font-bold transition">← Quay lại Trang chủ</Link>
-          <span>MTRUONG-STORE Legal Center</span>
+          <span>Cún-shop Legal Center</span>
         </div>
       </div>
     </div>

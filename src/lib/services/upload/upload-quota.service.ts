@@ -90,18 +90,21 @@ export async function reserveUploadQuota(
 
   try {
     return await prisma.$transaction(async (tx) => {
+      // Postgres equivalent of ON DUPLICATE KEY UPDATE. The composite PK
+      // (userId, periodStart) is the conflict target; a conflicting row means the
+      // bucket already exists for this window, so only the timestamp advances.
       await tx.$executeRaw(Prisma.sql`
         INSERT INTO upload_quota_bucket
-          (userId, periodStart, requestCount, fileCount, bytesUsed, expiresAt, createdAt, updatedAt)
+          ("userId", "periodStart", "requestCount", "fileCount", "bytesUsed", "expiresAt", "createdAt", "updatedAt")
         VALUES
           (${userId}, ${periodStart}, 0, 0, 0, ${retentionUntil}, ${now}, ${now})
-        ON DUPLICATE KEY UPDATE updatedAt = ${now}
+        ON CONFLICT ("userId", "periodStart") DO UPDATE SET "updatedAt" = ${now}
       `);
 
       const rows = await tx.$queryRaw<Array<{ fileCount: number; bytesUsed: bigint }>>(Prisma.sql`
-        SELECT fileCount, bytesUsed
+        SELECT "fileCount", "bytesUsed"
         FROM upload_quota_bucket
-        WHERE userId = ${userId} AND periodStart = ${periodStart}
+        WHERE "userId" = ${userId} AND "periodStart" = ${periodStart}
         FOR UPDATE
       `);
 
@@ -117,11 +120,11 @@ export async function reserveUploadQuota(
 
       await tx.$executeRaw(Prisma.sql`
         UPDATE upload_quota_bucket
-        SET requestCount = requestCount + 1,
-            fileCount = fileCount + ${fileSizes.length},
-            bytesUsed = bytesUsed + ${bytesReserved},
-            updatedAt = ${now}
-        WHERE userId = ${userId} AND periodStart = ${periodStart}
+        SET "requestCount" = "requestCount" + 1,
+            "fileCount" = "fileCount" + ${fileSizes.length},
+            "bytesUsed" = "bytesUsed" + ${bytesReserved},
+            "updatedAt" = ${now}
+        WHERE "userId" = ${userId} AND "periodStart" = ${periodStart}
       `);
 
       const reservation = await tx.uploadReservation.create({
@@ -205,7 +208,7 @@ export async function releaseUploadReservation(reservationId: string, now: Date 
         storageKeys: string | null;
         status: string;
       }>>(Prisma.sql`
-        SELECT userId, quotaPeriodStart, fileCount, bytesReserved, storageKeys, status
+        SELECT "userId", "quotaPeriodStart", "fileCount", "bytesReserved", "storageKeys", status
         FROM upload_reservation
         WHERE id = ${reservationId}
         FOR UPDATE
@@ -219,12 +222,12 @@ export async function releaseUploadReservation(reservationId: string, now: Date 
       });
       await tx.$executeRaw(Prisma.sql`
         UPDATE upload_quota_bucket
-        SET requestCount = GREATEST(0, requestCount - 1),
-            fileCount = GREATEST(0, fileCount - ${reservation.fileCount}),
-            bytesUsed = GREATEST(0, bytesUsed - ${reservation.bytesReserved}),
-            updatedAt = ${now}
-        WHERE userId = ${reservation.userId}
-          AND periodStart = ${reservation.quotaPeriodStart}
+        SET "requestCount" = GREATEST(0, "requestCount" - 1),
+            "fileCount" = GREATEST(0, "fileCount" - ${reservation.fileCount}),
+            "bytesUsed" = GREATEST(0, "bytesUsed" - ${reservation.bytesReserved}),
+            "updatedAt" = ${now}
+        WHERE "userId" = ${reservation.userId}
+          AND "periodStart" = ${reservation.quotaPeriodStart}
       `);
       return parseStorageKeys(reservation.storageKeys);
     });

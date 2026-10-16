@@ -26,83 +26,83 @@ function generateSlug(text: string, index?: number): string {
 
 const products = [
   {
-    name: 'Áo Khoác Denim Premium', price: 1290000, originalPrice: 1890000,
-    description: 'Áo khoác denim cao cấp với thiết kế hiện đại, chất liệu vải denim Nhật Bản dày dặn, form regular fit thoải mái. Phù hợp cho cả nam và nữ, dễ phối đồ cho mọi dịp.',
-    category: 'Thời trang', rating: 4.8, reviews: 124, inStock: true, badge: 'Bán chạy',
-    emoji: '🧥', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    name: 'Nike Mercurial Vapor 16 Elite FG', price: 5490000, originalPrice: 6500000,
+    description: 'Giày đá bóng sân cỏ tự nhiên bản Elite, upper Flyknit siêu nhẹ ôm chân, đinh FG tăng tốc bứt phá. Chính hãng Nike, bao check auth trọn đời.',
+    category: 'Giày sân cỏ tự nhiên', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Hot',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)',
   },
   {
-    name: 'Tai Nghe Bluetooth Pro', price: 2490000, originalPrice: 3290000,
-    description: 'Tai nghe không dây chống ồn chủ động ANC, âm thanh Hi-Res, pin 40 giờ. Kết nối Bluetooth 5.3 ổn định, thiết kế over-ear êm ái.',
-    category: 'Công nghệ', rating: 4.9, reviews: 256, inStock: true, badge: 'Hot',
-    emoji: '🎧', gradient: 'linear-gradient(135deg, #0c3483 0%, #a2b6df 100%)',
+    name: 'Adidas Predator Elite FG', price: 5890000, originalPrice: 6900000,
+    description: 'Predator Elite với lưỡi gà Strikescale hỗ trợ kiểm soát bóng, đế Controlframe bám sân. Dành cho cầu thủ ưa kiểm soát và sút xoáy.',
+    category: 'Giày sân cỏ tự nhiên', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Hot',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #111827 0%, #ef4444 100%)',
   },
   {
-    name: 'Serum Vitamin C 20%', price: 450000, originalPrice: 650000,
-    description: 'Serum dưỡng sáng da chuyên sâu với Vitamin C nguyên chất 20%, Hyaluronic Acid và Niacinamide. Giúp da sáng mịn, đều màu sau 2 tuần sử dụng.',
-    category: 'Làm đẹp', rating: 4.7, reviews: 89, inStock: true, badge: 'Mới',
-    emoji: '✨', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    name: 'Mizuno Morelia Neo IV Japan', price: 6290000, originalPrice: null,
+    description: 'Da kangaroo nguyên tấm Made in Japan, form ôm chân Á Đông, nhẹ và êm hàng đầu phân khúc. Lựa chọn của dân chơi giày thứ thiệt.',
+    category: 'Giày sân cỏ tự nhiên', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Premium',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #1e3a8a 0%, #f8fafc 100%)',
   },
   {
-    name: 'Bàn Làm Việc Gỗ Sồi', price: 4590000, originalPrice: null,
-    description: 'Bàn làm việc gỗ sồi tự nhiên nguyên khối, thiết kế Scandinavian tối giản. Mặt bàn rộng 120x60cm, chân thép sơn tĩnh điện chống gỉ.',
-    category: 'Gia dụng', rating: 4.6, reviews: 67, inStock: true, badge: null,
-    emoji: '🪑', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    name: 'Nike Phantom GX II TF', price: 2190000, originalPrice: 2790000,
+    description: 'Bản đế TF chuyên sân cỏ nhân tạo Việt Nam, đinh dăm chống lật cổ chân, upper bám bóng tốt khi trời mưa sân ướt.',
+    category: 'Giày sân cỏ nhân tạo', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Bán chạy',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #059669 0%, #34d399 100%)',
   },
   {
-    name: 'Giày Sneaker Urban', price: 1890000, originalPrice: 2490000,
-    description: 'Giày sneaker phong cách đường phố, đế boost siêu nhẹ, upper knit thoáng khí. Thiết kế unisex, phù hợp vận động và dạo phố.',
-    category: 'Thời trang', rating: 4.5, reviews: 198, inStock: true, badge: 'Sale',
-    emoji: '👟', gradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+    name: 'Adidas Predator League TF', price: 1990000, originalPrice: 2490000,
+    description: 'Predator League đế TF quốc dân: êm, bền, giá hợp lý. Phù hợp đá phủi 2-3 trận/tuần, form dễ mang cho chân bè.',
+    category: 'Giày sân cỏ nhân tạo', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Bán chạy',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)',
   },
   {
-    name: 'Laptop Gaming RTX 4060', price: 25990000, originalPrice: 29990000,
-    description: 'Laptop gaming mạnh mẽ với RTX 4060, CPU i7 Gen 13, RAM 16GB DDR5, SSD 512GB NVMe. Màn hình 15.6" IPS 144Hz, tản nhiệt kép hiệu quả.',
-    category: 'Công nghệ', rating: 4.9, reviews: 312, inStock: true, badge: 'Hot',
-    emoji: '💻', gradient: 'linear-gradient(135deg, #13547a 0%, #80d0c7 100%)',
+    name: 'Puma Future 7 Ultimate FG', price: 5390000, originalPrice: null,
+    description: 'Dải Fuzionfit+ khóa cổ chân linh hoạt, đế Dynamic Motion bám đa hướng. Phong cách tốc độ của Neymar Jr.',
+    category: 'Giày sân cỏ tự nhiên', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Mới',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #db2777 0%, #f472b6 100%)',
   },
   {
-    name: 'Nước Hoa Unisex EDP', price: 1650000, originalPrice: null,
-    description: 'Nước hoa Eau de Parfum unisex với hương gỗ trầm ấm, tầng hương đầu cam bergamot tươi mát. Lưu hương 8-10 tiếng, toả hương vừa phải.',
-    category: 'Làm đẹp', rating: 4.4, reviews: 45, inStock: true, badge: null,
-    emoji: '🌸', gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+    name: 'Nike Lunargato II Futsal', price: 2490000, originalPrice: 2990000,
+    description: 'Vua sân futsal: đế IC bám sàn gỗ/sân futsal, da thật mềm mại xử lý bóng trong không gian hẹp. Chuẩn thi đấu futsal.',
+    category: 'Giày futsal', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Hot',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #0891b2 0%, #22d3ee 100%)',
   },
   {
-    name: 'Đèn Bàn LED Thông Minh', price: 890000, originalPrice: null,
-    description: 'Đèn bàn LED điều khiển qua app, 5 chế độ ánh sáng, điều chỉnh nhiệt độ màu 2700K-6500K. Thiết kế tối giản, cổng sạc USB tích hợp.',
-    category: 'Gia dụng', rating: 4.3, reviews: 78, inStock: true, badge: 'Mới',
-    emoji: '💡', gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+    name: 'Joma Top Flex Futsal', price: 1790000, originalPrice: 2190000,
+    description: 'Top Flex — huyền thoại futsal Tây Ban Nha: da thật, đế xoay PIVOT hỗ trợ đổi hướng nhanh, bền bỉ vượt tầm giá.',
+    category: 'Giày futsal', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Bán chạy',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #b45309 0%, #fbbf24 100%)',
   },
   {
-    name: 'Đồng Hồ Thông Minh V5', price: 3290000, originalPrice: 4190000,
-    description: 'Smartwatch cao cấp với màn hình AMOLED 1.4", đo SpO2, nhịp tim, GPS tích hợp. Chống nước 5ATM, pin 14 ngày. 100+ mặt đồng hồ.',
-    category: 'Công nghệ', rating: 4.7, reviews: 167, inStock: true, badge: 'Bán chạy',
-    emoji: '⌚', gradient: 'linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)',
+    name: 'Kamito Velocidad TF', price: 1490000, originalPrice: 1790000,
+    description: 'Thương hiệu Việt được Quang Hải tin dùng: da tổng hợp cao cấp, đế TF bám tốt, form chuẩn chân người Việt. Giá phủi thân thiện.',
+    category: 'Giày sân cỏ nhân tạo', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Bán chạy',
+    emoji: '👟', gradient: 'linear-gradient(135deg, #dc2626 0%, #fca5a5 100%)',
   },
   {
-    name: 'Áo Thun Cotton Organic', price: 390000, originalPrice: null,
-    description: 'Áo thun cotton hữu cơ 100%, mềm mịn thân thiện với da. Form regular fit, nhiều màu sắc. Sản xuất bền vững, không hoá chất độc hại.',
-    category: 'Thời trang', rating: 4.6, reviews: 234, inStock: true, badge: null,
-    emoji: '👕', gradient: 'linear-gradient(135deg, #c3cfe2 0%, #f5f7fa 100%)',
+    name: 'Mizuno Monarcida Neo II AS', price: 2390000, originalPrice: null,
+    description: 'Da thật êm chân, đế AS đa năng đá được cả sân nhân tạo lẫn futsal. Độ bền Mizuno trứ danh, càng đá càng mềm.',
+    category: 'Giày sân cỏ nhân tạo', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: null,
+    emoji: '👟', gradient: 'linear-gradient(135deg, #0f766e 0%, #5eead4 100%)',
   },
   {
-    name: 'Máy Pha Cà Phê Espresso', price: 6890000, originalPrice: null,
-    description: 'Máy pha cà phê espresso bán tự động, áp suất 15 bar, hệ thống đánh sữa tạo bọt. Bình nước 1.5L, khay chứa bã tự động. Thiết kế inox sang trọng.',
-    category: 'Gia dụng', rating: 4.8, reviews: 92, inStock: true, badge: 'Premium',
-    emoji: '☕', gradient: 'linear-gradient(135deg, #3c1053 0%, #ad5389 100%)',
+    name: 'Bóng Động Lực UHV 2.07', price: 690000, originalPrice: 850000,
+    description: 'Bóng thi đấu đạt chuẩn FIFA Quality, size 5, da PU chống thấm nước, đường may sâu giữ form. Bóng chính thức nhiều giải phong trào.',
+    category: 'Phụ kiện bóng đá', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: 'Sale',
+    emoji: '⚽', gradient: 'linear-gradient(135deg, #16a34a 0%, #86efac 100%)',
   },
   {
-    name: 'Balo Du Lịch Chống Nước', price: 790000, originalPrice: 1190000,
-    description: 'Balo du lịch 40L chống nước IPX4, ngăn laptop 15.6", dây đeo ergonomic giảm áp lực. Nhiều ngăn tiện dụng, khoá chống trộm TSA.',
-    category: 'Thời trang', rating: 4.5, reviews: 156, inStock: true, badge: 'Sale',
-    emoji: '🎒', gradient: 'linear-gradient(135deg, #2b5876 0%, #4e4376 100%)',
+    name: 'Tất chống trượt Compressport', price: 1990000, originalPrice: null,
+    description: 'Tất thi đấu chống trượt với đệm silicone lòng bàn chân, thoáng khí, ôm cổ chân. Phụ kiện nhỏ nhưng khác biệt lớn khi bứt tốc.',
+    category: 'Phụ kiện bóng đá', rating: 0, reviews: 0, inStock: true, stockQuantity: 50, badge: null,
+    emoji: '🧦', gradient: 'linear-gradient(135deg, #4d7c0f 0%, #a3e635 100%)',
   },
 ];
 
 // Function to generate 200 products
 function generateProducts() {
-  const categories = ['Thời trang', 'Công nghệ', 'Làm đẹp', 'Gia dụng'];
-  const emojis = ['👔', '👗', '👠', '🧢', '💄', '💅', '🎮', '📱', '🖥️', '⌨️', '🖱️', '🎧', '📷', '🔊', '🌟', '✨', '💎', '⚡', '🔥', '❄️'];
+  const categories = ['Giày sân cỏ tự nhiên', 'Giày sân cỏ nhân tạo', 'Giày futsal', 'Phụ kiện bóng đá'];
+  const emojis = ['👟', '⚽', '🧦', '🥅', '🧤', '🎽', '🏟️', '💪', '🔥', '⭐', '🏆', '💨'];
   const badges = ['Hot', 'Sale', 'Mới', 'Bán chạy', 'Premium', null];
   const gradients = [
     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -114,27 +114,29 @@ function generateProducts() {
   ];
 
   const productNames = [
-    'Quần Jeans Slim Fit', 'Áo Sơ Mi Oxford', 'Váy Xòe Lưới', 'Chân Váy Midi', 'Quần Short Kaki',
-    'Áo Polo Cotton', 'Áo Sweater Nỉ', 'Áo Cardigan Len', 'Áo Croptop Bé Gái', 'Quần Jogger Thể Thao',
-    'Điện Thoại Xiaomi 14', 'Máy Tính Bảng iPad Pro', 'Camera Sony A6700', 'Loa Bluetooth JBL', 'Ốp Lưng Innostyle',
-    'Sạc Nhanh USB-C', 'Cáp Lightning Chính Hãng', 'Pin Dự Phòng 20000mAh', 'Ốp Lưng Kính Cường Lực', 'Bao Da Điện Thoại',
-    'Kem Chống Nắng SPF 50', 'Mặt Nạ Giấy Dưỡng Ẩm', 'Toner Cân Bằng Da', 'Sữa Rửa Mặt Tạo Bọt', 'Kem Dưỡng Ẩm Ban Đêm',
-    'Mascara Waterproof', 'Phấn Mắt Shimmer', 'Son Lì Môi Đỏ', 'Kem Má Hồng Đất', 'Tẩy Trang Tinh Dầu',
-    'Chăn Mềm Mại', 'Gối Cao Su Non', 'Nệm Memory Foam', 'Drap Giường Cotton', 'Vỏ Gối Lụa',
-    'Bàn Phím Cơ RGB', 'Chuột Gaming Wireless', 'Màn Hình Cong 144Hz', 'Ghế Gaming DXRacer', 'Đế Tản Nhiệt Laptop',
-    'Mũ Thể Thao Adidas', 'Dép Quai Ngang Comfy', 'Tất Socks Cotton', 'Khăn Ăn Vải Premium', 'Thắt Lưng Da Bò',
-    'Túi Xách Công Sở', 'Ví Da Nam Cao Cấp', 'Dây Chuyền Bạc Sterling', 'Vòng Tay Đá Tự Nhiên', 'Nhẫn Bạc Khắc',
+    'Nike Mercurial Vapor 16 Elite FG', 'Nike Phantom GX II Elite FG', 'Nike Tiempo Legend 10 Elite', 'Adidas Predator Elite FG',
+    'Adidas F50 Elite FG', 'Adidas Copa Pure 2 Elite', 'Puma Future 7 Ultimate FG', 'Puma Ultra 5 Carbon FG',
+    'Mizuno Morelia Neo IV Japan', 'New Balance Furon v8 FG', 'New Balance Tekela v4 FG', 'Nike Mercurial Vapor 16 Academy',
+    'Adidas Predator League FG', 'Puma Ultra Play FG', 'Mizuno Monarcida Neo III', 'Grand Sport Copa FG', 'Kamito TA11 Pro',
+    'Nike Phantom GX II TF', 'Adidas Predator League TF', 'Mizuno Monarcida Neo II AS', 'Puma Future Play TT',
+    'Joma Propulsion Lite TF', 'Zocker Strike TF', 'Mitre Delta TF', 'Kamito Velocidad TF', 'Grand Sport GTX TF', 'Động Lực Spectre TF',
+    'Nike Lunargato II Futsal', 'Adidas Top Sala Competition', 'Mizuno Morelia Sala Club IC', 'Joma Top Flex Futsal',
+    'Kelme Michel Futsal', 'Grand Sport Futsal Pro', 'Kamito GRL Futsal', 'Zocker Futsal Pro IC', 'Mitre Futsal X', 'Pan Vigor X Futsal',
+    'Nike Mercurial Vapor 16 Kids', 'Adidas Predator Kids TF', 'Puma Kids Star TF',
+    'Bóng Động Lực UHV 2.07', 'Bóng Mitre Impel', 'Tất chống trượt Compressport', 'Bó gối Mueller', 'Băng quấn cổ chân',
+    'Túi đựng giày đá bóng', 'Xịt khử mùi giày', 'Đế lót giày thể thao', 'Găng tay thủ môn Adidas', 'Băng đội trưởng',
+    'Còi trọng tài kèm thẻ', 'Túi lưới đựng bóng',
   ];
 
   const descriptions = [
-    'Sản phẩm chất lượng cao với thiết kế hiện đại, đáp ứng nhu cầu hàng ngày.',
-    'Được làm từ chất liệu tốt nhất, thoải mái và bền durable.',
-    'Thiết kế xu hướng mới nhất, phù hợp cho mọi lứa tuổi.',
-    'Sản phẩm bán chạy hàng đầu với nhiều đánh giá tích cực.',
-    'Chất lượng premium với giá cả hợp lý, đáng để mua.',
-    'Được yêu thích bởi hàng ngàn khách hàng trên toàn quốc.',
-    'Thiết kế độc quyền, không bị lặp ở nơi khác.',
-    'Sản phẩm thân thiện với môi trường, bền vững lâu dài.',
+    'Giày đá bóng chính hãng 100%, bao check auth trọn đời. Form chuẩn, đế bám tốt trên mặt sân tương ứng.',
+    'Upper ôm chân, hỗ trợ kiểm soát bóng và bứt tốc. Đổi size miễn phí trong 30 ngày nếu không vừa.',
+    'Độ bền đã được kiểm chứng qua hàng ngàn trận phủi. Càng đá càng mềm, càng êm.',
+    'Lựa chọn của dân đá phủi: giá hợp lý, chất lượng vượt tầm giá, bảo hành keo chỉ 6 tháng.',
+    'Thiết kế từ hãng lớn, công nghệ upper mới nhất giúp xử lý bóng tự tin trong mọi tình huống.',
+    'Phù hợp đá 2-3 trận/tuần. Tư vấn chọn size theo form chân miễn phí qua hotline.',
+    'Phụ kiện bóng đá thiết yếu, chất lượng thi đấu, giá bình dân cho anh em phong trào.',
+    'Hàng chính hãng đầy đủ hóa đơn. Phát hiện fake đền 200% giá trị đơn hàng.',
   ];
 
   const newProducts = [];
@@ -150,9 +152,12 @@ function generateProducts() {
       originalPrice: realisticOriginalPrice(price, hasDiscount, i),
       description: descriptions[Math.floor(Math.random() * descriptions.length)],
       category: categories[categoryIndex],
-      rating: parseFloat((Math.random() * 2 + 3).toFixed(1)), // 3.0 - 5.0
-      reviews: Math.floor(Math.random() * 500),
-      inStock: Math.random() > 0.1,
+      // Dữ liệu thật: không bịa rating/review. Tồn đầu kỳ 50 để chủ shop
+      // kiểm kê lại trong Admin → Kho hàng trước go-live.
+      rating: 0,
+      reviews: 0,
+      stockQuantity: 50,
+      inStock: true,
       badge: badges[Math.floor(Math.random() * badges.length)],
       emoji: emojis[Math.floor(Math.random() * emojis.length)],
       gradient: gradients[Math.floor(Math.random() * gradients.length)],
@@ -207,7 +212,7 @@ async function main() {
     data: {
       code: `US${String(userCount).padStart(3, '0')}`,
       name: 'Test User',
-      email: 'user@mtruong.store',
+      email: 'user@cun-shop.store',
       password: userPassword,
       role: 'user',
       phone: '0123456789',
@@ -223,7 +228,7 @@ async function main() {
     data: {
       code: 'SH001',
       name: 'Nguyễn Văn Giao',
-      email: 'shipper@mtruong.store',
+      email: 'shipper@cun-shop.store',
       password: shipperPassword,
       role: 'shipper',
       phone: '0987654321',
@@ -236,24 +241,26 @@ async function main() {
   console.log(`✅ Tạo shipper: ${shipper.email} (SH001)`);
 
   // Tạo categories
-  const categoriesData = ['Thời trang', 'Công nghệ', 'Làm đẹp', 'Gia dụng'];
+  const categoriesData = ['Giày sân cỏ tự nhiên', 'Giày sân cỏ nhân tạo', 'Giày futsal', 'Phụ kiện bóng đá'];
   const categoryMap: Record<string, string> = {};
   for (const catName of categoriesData) {
     const cat = await prisma.category.create({
       data: {
         name: catName,
         slug: catName.toLowerCase().replace(/ /g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+        approved: true, // Seed demo: visible ngay, khỏi chờ duyệt tay (Phase 2)
       }
     });
     categoryMap[catName] = cat.id;
   }
   console.log(`✅ Tạo ${categoriesData.length} danh mục`);
 
-  // Tạo products
+  // Tồn kho: dùng đúng số đầu kỳ khai báo trong catalog (mặc định 50), KHÔNG random.
+  // Chủ shop phải kiểm kê và sửa lại trong Admin → Kho hàng trước khi bán thật.
   for (const product of allProducts) {
     const { category, ...rest } = product;
     productCount++;
-    const stockQty = Math.floor(Math.random() * 120) + 1;
+    const stockQty = rest.stockQuantity ?? 50;
     await prisma.product.create({ 
       data: {
         ...rest,
@@ -271,8 +278,8 @@ async function main() {
 
   console.log('\n🎉 Seed hoàn thành!');
   console.log('📧 Admin:  truongcri0101@gmail.com (AD001)');
-  console.log('📧 User:   user@mtruong.store (US001)');
-  console.log('📧 Shipper: shipper@mtruong.store (SH001)');
+  console.log('📧 User:   user@cun-shop.store (US001)');
+  console.log('📧 Shipper: shipper@cun-shop.store (SH001)');
   console.log(`📦 Tổng sản phẩm: ${allProducts.length} (PR001 - PR${String(allProducts.length).padStart(3, '0')})`);
 }
 

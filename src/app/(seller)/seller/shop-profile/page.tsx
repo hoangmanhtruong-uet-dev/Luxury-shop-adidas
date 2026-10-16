@@ -12,7 +12,7 @@ export default function ShopProfilePage() {
     <div>
       <div style={{ marginBottom: '30px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: 800 }}>Hồ Sơ Shop</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Quản lý thông tin hiển thị của gian hàng trên MTruong-Store.</p>
+        <p style={{ color: 'var(--text-muted)' }}>Quản lý thông tin hiển thị của gian hàng trên Cún-Store.</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>

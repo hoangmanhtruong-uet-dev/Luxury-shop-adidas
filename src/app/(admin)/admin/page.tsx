@@ -17,8 +17,8 @@ export default function AdminDashboard() {
   const [recentUsers, setRecentUsers] = useState<any[]>([
     {
       id: '1',
-      name: 'MTruong Seller 01',
-      email: 'seller01@mtruong.store',
+      name: 'Cún Seller 01',
+      email: 'seller01@cun-shop.store',
       role: 'user',
       isSeller: true,
       createdAt: new Date(Date.now() - 58 * 24 * 60 * 60 * 1000).toISOString(),

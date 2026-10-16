@@ -6,6 +6,15 @@ import { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { FiSearch, FiHeart, FiShoppingCart, FiPhone, FiTruck, FiCheckCircle, FiBell } from 'react-icons/fi';
 
+/** Phase 4.2: derive local initials so no user name is sent to a third party. */
+function initialsOf(name?: string | null): string {
+  const parts = (name ?? '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  const first = parts[0]?.[0] ?? '';
+  const last = parts.length > 1 ? parts[parts.length - 1]?.[0] ?? '' : '';
+  return (first + last).toUpperCase() || '?';
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -62,7 +71,7 @@ export default function Navbar() {
           </span>
         </div>
         <div className="flex gap-4 text-slate-400">
-          <Link href="#" className="hover:text-white transition">📞 Hotline 1800 1234 56</Link>
+          <Link href="#" className="hover:text-white transition">📞 Hotline 0968 544 769</Link>
           <span className="text-slate-600">|</span>
           <Link href="/chinh-sach" className="hover:text-white transition">Chính sách</Link>
           <span className="text-slate-600">|</span>
@@ -77,10 +86,10 @@ export default function Navbar() {
           <span className="text-2xl">💎</span>
           <div className="leading-tight">
             <h1 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-500 tracking-tight">
-              MTRUONG-
+              CÚN-
               <br />STORE
             </h1>
-            <p className="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">High-Tech & Luxury</p>
+            <p className="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">Giày đá bóng chính hãng</p>
           </div>
         </Link>
 
@@ -101,7 +110,7 @@ export default function Navbar() {
             type="text" 
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Tìm kiếm sản phẩm, công nghệ, thời trang..." 
+            placeholder="Tìm kiếm giày đá bóng, thương hiệu, phụ kiện..." 
             className="w-full pl-24 pr-24 py-2.5 bg-[#1E293B] border border-slate-700 rounded-full text-sm text-white focus:outline-none focus:border-orange-500/50 transition-colors placeholder-slate-500"
           />
           <button type="submit" className="absolute inset-y-1 right-1 px-5 bg-gradient-to-r from-orange-500 to-rose-500 text-white text-sm font-semibold rounded-full hover:shadow-[0_0_15px_rgba(249,115,22,0.4)] transition">
@@ -138,7 +147,21 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 p-[2px]">
                   <div className="w-full h-full rounded-full bg-[#0B1120] flex items-center justify-center overflow-hidden">
-                    <img src={`https://ui-avatars.com/api/?name=${user?.name}&background=1E293B&color=fff`} alt="avatar" />
+                    {/*
+                    Phase 4.2: previously this rendered
+                    `https://ui-avatars.com/api/?name=${user?.name}`, which
+                    (a) shipped the user's real display name to a third party on
+                        every authenticated page view (GDPR / PDPD concern), and
+                    (b) interpolated an unencoded value, so a name containing `&`
+                        injected extra query parameters into that request.
+                    Render initials locally from our own data instead.
+                  */}
+                  <span
+                    aria-hidden="true"
+                    className="w-full h-full flex items-center justify-center text-xs font-bold text-white"
+                  >
+                    {initialsOf(user?.name)}
+                  </span>
                   </div>
                 </div>
                 <div className="hidden xl:block text-left">
@@ -170,10 +193,10 @@ export default function Navbar() {
       {/* Sub Navbar */}
       <div className="hidden md:flex items-center justify-between px-8 py-2.5 bg-[#080d1a] text-xs font-semibold">
         <div className="flex items-center gap-6">
-          <Link href="/products?category=Thời+trang" className="text-slate-300 hover:text-orange-400 transition">Thời trang</Link>
-          <Link href="/products?category=Công+nghệ" className="text-slate-300 hover:text-orange-400 transition">Công nghệ</Link>
-          <Link href="/products?category=Làm+đẹp" className="text-slate-300 hover:text-orange-400 transition">Làm đẹp</Link>
-          <Link href="/products?category=Gia+dụng" className="text-slate-300 hover:text-orange-400 transition">Gia dụng</Link>
+          <Link href="/products?category=Giày+sân+cỏ+tự+nhiên" className="text-slate-300 hover:text-orange-400 transition">Giày sân cỏ tự nhiên</Link>
+          <Link href="/products?category=Giày+sân+cỏ+nhân+tạo" className="text-slate-300 hover:text-orange-400 transition">Giày sân cỏ nhân tạo</Link>
+          <Link href="/products?category=Giày+futsal" className="text-slate-300 hover:text-orange-400 transition">Giày futsal</Link>
+          <Link href="/products?category=Phụ+kiện+bóng+đá" className="text-slate-300 hover:text-orange-400 transition">Phụ kiện bóng đá</Link>
           <span className="text-slate-600">|</span>
           <Link href="/products?sale=true" className="text-rose-400 hover:text-rose-300 flex items-center gap-1 transition">
             🔥 Khuyến mãi Hot

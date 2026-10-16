@@ -9,16 +9,16 @@ const inter = Inter({ subsets: ['latin', 'vietnamese'] })
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://website-banhang-mzzl.onrender.com'),
   title: {
-    default: 'MTRUONG-STORE - Sàn Thương Mại Điện Tử Đa Nhà Bán Cao Cấp',
-    template: '%s | MTRUONG-STORE',
+    default: 'Cún-shop - Giày đá bóng chính hãng | Uy tín & Chất lượng',
+    template: '%s | Cún-shop',
   },
-  description: 'Khám phá hàng ngàn sản phẩm chính hãng 100% thuộc các ngành hàng Công nghệ, Thời trang, Gia dụng từ các nhà bán hàng uy tín trên MTRUONG-STORE.',
-  keywords: ['MTRUONG-STORE', 'mua sắm trực tuyến', 'thương mại điện tử', 'hàng chính hãng', 'freeship', 'PayOS', 'VietQR'],
+  description: 'Cún-shop chuyên giày đá bóng chính hãng Nike, Adidas, Mizuno, Puma. Uy tín, chất lượng, bao check auth, đổi size 30 ngày.',
+  keywords: ['Cún-shop', 'giày đá bóng', 'giày đá banh chính hãng', 'Nike Mercurial', 'Adidas Predator', 'đổi size 30 ngày', 'PayOS', 'VietQR'],
   openGraph: {
-    title: 'MTRUONG-STORE - Sàn TMĐT Đa Nhà Bán Cao Cấp',
-    description: 'Mua sắm an toàn, giao hàng hỏa tốc, thanh toán VietQR tự động qua PayOS.',
+    title: 'Cún-shop - Giày đá bóng chính hãng',
+    description: 'Uy tín, chất lượng. Bao check auth trọn đời, đổi size 30 ngày, thanh toán VietQR qua PayOS.',
     url: 'https://website-banhang-mzzl.onrender.com',
-    siteName: 'MTRUONG-STORE',
+    siteName: 'Cún-shop',
     locale: 'vi_VN',
     type: 'website',
   },

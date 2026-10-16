@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import ProductCard from '@/components/product/ProductCard';
 import { compareMoneyStrings } from '@/lib/utils/client-money';
 import type { Product } from '@/types/product';
+import { extractProducts } from '@/lib/api/products-response';
 
 interface Category {
   id: string;
@@ -39,10 +40,10 @@ export default function CategoryDetailPage() {
         if (!found) throw new Error('Danh mục không tồn tại');
         setCategory(found);
 
-        const productResponse = await fetch(`/api/products?category=${encodeURIComponent(found.name)}`);
+        const productResponse = await fetch(`/api/products?category=${encodeURIComponent(found.name)}&limit=50`);
         const productData = await productResponse.json();
         if (!productResponse.ok) throw new Error(productData.error || 'Không thể tải sản phẩm');
-        setProducts(Array.isArray(productData) ? productData : []);
+        setProducts(extractProducts(productData));
       } catch (caught) {
         setError(caught instanceof Error ? caught.message : 'Không thể tải danh mục');
       } finally {
@@ -65,6 +66,12 @@ export default function CategoryDetailPage() {
   }, [products, priceMax, selectedRating, sortBy]);
 
   if (loading) return <div className="page-container" style={{ paddingTop: '100px', textAlign: 'center' }}>Đang tải...</div>;
+
+  // Phase 4.1: a real 404 instead of a 200-status "Danh mục không tồn tại" page.
+  // `error` still renders inline (it is a genuine failure, not a missing record).
+  if (!category && !error) {
+    notFound();
+  }
 
   if (error || !category) {
     return (

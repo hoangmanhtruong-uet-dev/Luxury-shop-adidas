@@ -43,7 +43,7 @@ export default function SellerProductsPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
             <div>
               <h1 style={{ fontSize: '28px', fontWeight: 800 }}>Quản Lý Sản Phẩm</h1>
-              <p style={{ color: 'var(--text-muted)' }}>Danh sách toàn bộ sản phẩm bạn đang kinh doanh trên MTruong-Store.</p>
+              <p style={{ color: 'var(--text-muted)' }}>Danh sách toàn bộ sản phẩm bạn đang kinh doanh trên Cún-Store.</p>
             </div>
             <Link href="/seller" className="btn-primary" style={{ padding: '8px 16px' }}>🏠 Home</Link>
           </div>

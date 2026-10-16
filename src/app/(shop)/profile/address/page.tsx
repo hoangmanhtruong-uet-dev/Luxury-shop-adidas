@@ -138,7 +138,7 @@ export default function AddressPage() {
               Địa Chỉ Của Tôi
             </h1>
             <p style={{ fontSize: '14px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
-              Quản lý danh sách địa chỉ nhận hàng để thanh toán nhanh hơn và cá nhân hóa trải nghiệm giao nhận chuẩn Luxury Express.
+              Quản lý danh sách địa chỉ nhận hàng để thanh toán nhanh hơn và cá nhân hóa trải nghiệm giao nhận chuẩn Cún Express.
             </p>
           </div>
           <button type="button" onClick={openAdd} className="btn-primary" style={{ padding: '14px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap', boxShadow: '0 8px 20px rgba(249, 115, 22, 0.3)' }}>

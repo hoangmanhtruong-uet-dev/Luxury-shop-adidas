@@ -4,8 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Runtime (serverless) goes through the Supabase pooler (6543, ?pgbouncer=true).
+  // Migrations MUST use a direct connection: DDL inside a pooled transaction-mode
+  // session fails or behaves unpredictably. `db:deploy` / `db:migrate` read this.
+  directUrl = env("DIRECT_URL")
 }
 
 // Enums
@@ -172,6 +176,17 @@ model VerificationToken {
   @@map("verification_token")
 }
 
+/// Phase 3 (homepage newsletter). Email capture with the welcome voucher code
+/// handed out, if any was available at subscribe time.
+model NewsletterSubscription {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  voucherCode String?
+  createdAt   DateTime @default(now())
+
+  @@map("newsletter_subscription")
+}
+
 model Voucher {
   id            String   @id @default(cuid())
   code          String   @unique
@@ -269,6 +284,11 @@ model Product {
   @@index([deletedAt, createdAt], map: "product_deleted_created_idx")
   @@index([categoryId])
   @@index([code])
+  // Phase 3.3 (Critical #16): /api/admin/inventory does
+  // `orderBy: { stockQuantity: 'asc' }` over the whole catalogue on every
+  // dashboard load. `stockQuantity` had no index, so that was a full scan plus
+  // a filesort on the hottest read path in the admin UI.
+  @@index([stockQuantity], map: "product_stock_quantity_idx")
   @@map("product")
 }
 
@@ -397,6 +417,16 @@ model Order {
   @@index([shipperId])
   @@index([status])
   @@index([paymentStatus])
+  // Phase 3.3 (Critical #16): the `Order` table had NO index on `createdAt`, yet
+  // every order listing and the admin analytics date-window queries sort or
+  // filter by it (`orderBy: { createdAt: 'desc' }`, `where: { createdAt: { gte } }`).
+  // That is a full table scan + filesort on the largest table in the system, on
+  // the most frequently hit admin endpoints.
+  @@index([userId, createdAt], map: "order_user_created_idx")
+  @@index([createdAt], map: "order_created_idx")
+  @@index([status, createdAt], map: "order_status_created_idx")
+  @@index([paymentStatus, createdAt], map: "order_payment_status_created_idx")
+  @@index([shipperId, status, createdAt], map: "order_shipper_status_created_idx")
   @@map("order")
 }
 
@@ -546,7 +576,7 @@ model OutboxEvent {
   aggregateId    String
   eventType      String    @db.VarChar(96)
   idempotencyKey String    @unique(map: "outbox_event_idem_key") @db.VarChar(191)
-  payload        String    @db.LongText
+  payload        String    @db.Text
   status         String    @default("PENDING") @db.VarChar(32)
   attemptCount   Int       @default(0)
   maxAttempts    Int       @default(10)
@@ -748,7 +778,7 @@ model IdempotencyRecord {
   requestHash    String    @db.Char(64)
   status         String    @default("PROCESSING") @db.VarChar(32)
   responseStatus Int?
-  responseBody   String?   @db.LongText
+  responseBody   String?   @db.Text
   resourceType   String?   @db.VarChar(64)
   resourceId     String?
   errorCode      String?

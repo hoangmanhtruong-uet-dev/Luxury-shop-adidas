@@ -31,7 +31,7 @@ export default function SellerSidebar() {
       gap: '8px'
     }}>
       <div style={{ padding: '10px 15px', marginBottom: '15px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--accent)' }}>MTruong Seller</h3>
+        <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--accent)' }}>Cún Seller</h3>
         <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Mã shop: #889234</p>
       </div>
 
@@ -66,7 +66,7 @@ export default function SellerSidebar() {
 
       <div style={{ marginTop: 'auto', padding: '15px', borderRadius: '16px', background: 'var(--accent-gradient)', color: 'white', fontSize: '12px', textAlign: 'center' }}>
         <p style={{ margin: '0 0 5px', fontWeight: 700 }}>Hỗ trợ 24/7</p>
-        <p style={{ margin: 0, opacity: 0.8 }}>Hotline: 1900 8888</p>
+        <p style={{ margin: 0, opacity: 0.8 }}>Hotline: 0968 544 769</p>
       </div>
     </div>
   );

@@ -47,7 +47,7 @@ export default function Footer() {
             </div>
             <div>
               <h4 className="text-white font-semibold text-sm">Hỗ trợ chuyên nghiệp 24/7</h4>
-              <p className="text-xs mt-1 leading-relaxed">Đội ngũ kỹ thuật viên tư vấn tận tình qua Hotline 1800 1234 56</p>
+              <p className="text-xs mt-1 leading-relaxed">Đội ngũ tư vấn chọn size tận tình qua Hotline 0968 544 769</p>
             </div>
           </div>
         </div>
@@ -58,10 +58,10 @@ export default function Footer() {
         <div>
           <Link href="/" className="flex items-center gap-2 mb-4">
             <span className="text-2xl">💎</span>
-            <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-500 tracking-tight">MTRUONG-STORE</span>
+            <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-500 tracking-tight">Cún-shop</span>
           </Link>
           <p className="text-xs leading-relaxed mb-6">
-            Hệ sinh thái thương mại điện tử đa ngành, thời trang & công nghệ cao cấp. 
+            Shop giày đá bóng chính hãng — Nike, Adidas, Mizuno, Puma. Uy tín, chất lượng, đổi size 30 ngày. 
             Khẳng định phong cách sống hiện đại và chuẩn mực.
           </p>
           <div className="flex items-center gap-3">
@@ -77,9 +77,16 @@ export default function Footer() {
         <div>
           <h4 className="text-white font-bold text-sm mb-4 uppercase tracking-wider">Danh mục</h4>
           <ul className="space-y-3">
-            {['Thời trang nam nữ & Phụ kiện', 'Thiết bị thông minh & Laptop', 'Mỹ phẩm & Chăm sóc sắc đẹp', 'Đồ gia dụng & Smart home', 'Đồ chơi công nghệ cao', 'Bộ sưu tập giới hạn'].map(item => (
-              <li key={item}>
-                <Link href="/products" className="text-xs hover:text-orange-500 transition">{item}</Link>
+            {[
+              { label: 'Giày sân cỏ tự nhiên', href: '/products?category=Giày+sân+cỏ+tự+nhiên' },
+              { label: 'Giày sân cỏ nhân tạo', href: '/products?category=Giày+sân+cỏ+nhân+tạo' },
+              { label: 'Giày futsal', href: '/products?category=Giày+futsal' },
+              { label: 'Phụ kiện bóng đá', href: '/products?category=Phụ+kiện+bóng+đá' },
+              { label: 'Hàng chính hãng', href: '/products' },
+              { label: 'Khuyến mãi hôm nay', href: '/products?sale=true' },
+            ].map(item => (
+              <li key={item.label}>
+                <Link href={item.href} className="text-xs hover:text-orange-500 transition">{item.label}</Link>
               </li>
             ))}
           </ul>
@@ -111,11 +118,11 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <FiPhone className="text-orange-500 shrink-0" />
-              <span className="text-xs">Hotline hỗ trợ: <strong className="text-white">1800 1234 56</strong> (24/7)</span>
+              <span className="text-xs">Hotline hỗ trợ: <strong className="text-white">0968 544 769</strong> (24/7)</span>
             </li>
             <li className="flex items-center gap-3">
               <FiMail className="text-orange-500 shrink-0" />
-              <span className="text-xs">support@mtruong-store.vn</span>
+              <span className="text-xs">support@cun-shop.vn</span>
             </li>
             <li className="flex items-center gap-3">
               <FiDownloadCloud className="text-orange-500 shrink-0" />
@@ -128,7 +135,7 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-[#1f2937] py-6">
         <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px]">
-          <p>© 2026 MTRUONG-STORE. All rights reserved.</p>
+          <p>© 2026 Cún-shop. All rights reserved.</p>
           <div className="flex items-center gap-2">
             <span className="px-2 py-1 bg-[#1E293B] rounded text-[#38bdf8] font-black tracking-wider">PayOS (VietQR)</span>
             <span className="px-2 py-1 bg-[#1E293B] rounded text-slate-300 font-bold tracking-wider">VISA</span>

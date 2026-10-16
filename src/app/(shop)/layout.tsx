@@ -1,6 +1,6 @@
 // src/app/(shop)/layout.tsx
 'use client';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import Navbar from '@/components/common/Navbar';
 import Footer from '@/components/common/Footer';
@@ -15,7 +15,13 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <Navbar />
+      {/* Navbar calls `useSearchParams()`, which opts everything above it in the
+          tree out of prerendering up to the closest Suspense boundary. Without
+          this boundary the production build fails with
+          "useSearchParams() should be wrapped in a suspense boundary". */}
+      <Suspense fallback={<div style={{ height: '64px' }} />}>
+        <Navbar />
+      </Suspense>
       <main>{children}</main>
       <Footer />
     </>

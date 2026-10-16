@@ -62,9 +62,83 @@ function redirectToLogin(request: NextRequest, fromPath: string) {
   return res;
 }
 
+function apiForbidden(code: string, message: string) {
+  return NextResponse.json({ error: { code, message } }, { status: 403 });
+}
+
+/**
+ * Returns a rejection response, or `null` when the request may proceed.
+ *
+ * The three privileged API namespaces each require a role claim that matches.
+ * Health probes, auth endpoints and the M2M webhooks live outside these
+ * namespaces and are therefore unaffected.
+ */
+async function guardApiNamespace(
+  request: NextRequest,
+  pathname: string,
+  token: string | undefined,
+): Promise<NextResponse | null> {
+  const needsAdmin = pathname.startsWith('/api/admin');
+  const needsSeller = pathname.startsWith('/api/seller');
+  const needsShipper = pathname.startsWith('/api/shipper');
+  if (!needsAdmin && !needsSeller && !needsShipper) return null;
+
+  // Cron endpoints authenticate with a shared bearer secret, not a user session.
+  // They are intentionally excluded so the secret check stays the single gate.
+  if (pathname.startsWith('/api/admin/cron/')) return null;
+
+  if (!token) {
+    return NextResponse.json(
+      { error: { code: 'UNAUTHENTICATED', message: 'Yêu cầu đăng nhập' } },
+      { status: 401 },
+    );
+  }
+
+  let payload;
+  try {
+    payload = await verifyAuthToken(token);
+  } catch {
+    return NextResponse.json(
+      { error: { code: 'UNAUTHENTICATED', message: 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn' } },
+      { status: 401 },
+    );
+  }
+
+  if (needsAdmin && payload.role !== 'admin') {
+    return apiForbidden('FORBIDDEN', 'Không có quyền truy cập khu vực quản trị');
+  }
+  if (needsSeller && !payload.isSeller && payload.role !== 'admin') {
+    return apiForbidden('FORBIDDEN', 'Không có quyền truy cập khu vực người bán');
+  }
+  if (needsShipper && payload.role !== 'shipper') {
+    return apiForbidden('FORBIDDEN', 'Không có quyền truy cập khu vực giao hàng');
+  }
+
+  void request;
+  return null;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('auth-token')?.value;
+
+  // OP9: deploy-time kill switch. The DB-backed `siteconfig.maintenanceMode`
+  // admin toggle is display-only — nothing reads it. THIS env flag is enforced
+  // here, before anything else (except static uploads). Admin console, login and
+  // health probes stay reachable so the incident can be managed and monitored.
+  if (
+    env.MAINTENANCE_MODE &&
+    !pathname.startsWith('/admin') &&
+    !pathname.startsWith('/api/admin') &&
+    !pathname.startsWith('/login') &&
+    !pathname.startsWith('/api/health') &&
+    !pathname.startsWith('/api/auth')
+  ) {
+    return NextResponse.json(
+      { error: { code: 'MAINTENANCE', message: 'Hệ thống đang bảo trì. Vui lòng quay lại sau.' } },
+      { status: 503, headers: { 'Retry-After': '300' } },
+    );
+  }
 
   // Harden headers for locally-stored uploaded files.
   // This runs before Next.js serves the static file, making headers reliable
@@ -100,6 +174,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.json({
       error: { code: originDecision.code, message: originDecision.message },
     }, { status: originDecision.status });
+  }
+
+  // =====================================================================
+  // Phase 2.3 (Warning W1): API namespace authorisation — defence in depth.
+  //
+  // Historically the middleware only matched page routes (/admin, /seller, ...),
+  // so `/api/admin/*` fell through to `NextResponse.next()` and EVERY one of the
+  // ~93 route handlers relied solely on its own in-handler `getSession()` call.
+  // One missing guard anywhere meant a fully unauthenticated privileged
+  // endpoint. These checks are a second layer; the handler-level guards remain
+  // the authoritative check (this layer cannot see DB state).
+  // =====================================================================
+  if (pathname.startsWith('/api/')) {
+    const guard = await guardApiNamespace(request, pathname, token);
+    if (guard) return guard;
   }
 
   // Bảo vệ route admin - verify JWT thực

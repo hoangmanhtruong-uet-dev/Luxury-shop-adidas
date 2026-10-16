@@ -21,7 +21,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   if (!product) {
     return {
-      title: 'Sản phẩm không tồn tại | MTRUONG-STORE',
+      title: 'Sản phẩm không tồn tại',
     };
   }
 
@@ -30,13 +30,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
   return {
-    title: `${product.name} | MTRUONG-STORE`,
-    description: product.description?.substring(0, 160) || `Mua ngay ${product.name} chính hãng tại MTRUONG-STORE với giá tốt nhất.`,
+    title: product.name,
+    description: product.description?.substring(0, 160) || `Mua ngay ${product.name} chính hãng tại Cún-shop với giá tốt nhất.`,
     openGraph: {
       title: product.name,
       description: product.description?.substring(0, 160) || `Sở hữu ${product.name} với khuyến mãi độc quyền.`,
       url: `${baseUrl}/products/${product.slug || product.id}`,
-      siteName: 'MTRUONG-STORE',
+      siteName: 'Cún-shop',
       images: [
         {
           url: imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`,

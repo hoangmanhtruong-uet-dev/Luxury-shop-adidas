@@ -16,7 +16,7 @@ export class ResendNotificationProvider implements NotificationProvider {
   private readonly client: Resend;
   private readonly fromAddress: string;
 
-  constructor(apiKey: string, fromAddress = 'MTRUONG-STORE <noreply@mtruong-store.vn>') {
+  constructor(apiKey: string, fromAddress = 'Cún-shop <noreply@cun-shop.vn>') {
     this.client = new Resend(apiKey);
     this.fromAddress = fromAddress;
   }
@@ -57,16 +57,16 @@ export class ResendNotificationProvider implements NotificationProvider {
 
   private getDefaultSubject(template: string): string {
     const subjects: Record<string, string> = {
-      'password-reset': '[MTRUONG-STORE] Đặt lại mật khẩu của bạn',
-      'order-confirmed': '[MTRUONG-STORE] Xác nhận đơn hàng',
-      'order-paid': '[MTRUONG-STORE] Thanh toán đơn hàng thành công 🎉',
-      'order-shipped': '[MTRUONG-STORE] Đơn hàng đang được giao',
-      'order-delivered': '[MTRUONG-STORE] Đơn hàng đã giao thành công',
-      'order-cancelled': '[MTRUONG-STORE] Đơn hàng đã bị hủy',
-      'refund-completed': '[MTRUONG-STORE] Hoàn tiền thành công',
-      'generic-email': '[MTRUONG-STORE] Thông báo',
+      'password-reset': '[Cún-shop] Đặt lại mật khẩu của bạn',
+      'order-confirmed': '[Cún-shop] Xác nhận đơn hàng',
+      'order-paid': '[Cún-shop] Thanh toán đơn hàng thành công 🎉',
+      'order-shipped': '[Cún-shop] Đơn hàng đang được giao',
+      'order-delivered': '[Cún-shop] Đơn hàng đã giao thành công',
+      'order-cancelled': '[Cún-shop] Đơn hàng đã bị hủy',
+      'refund-completed': '[Cún-shop] Hoàn tiền thành công',
+      'generic-email': '[Cún-shop] Thông báo',
     };
-    return subjects[template] ?? '[MTRUONG-STORE] Thông báo';
+    return subjects[template] ?? '[Cún-shop] Thông báo';
   }
 
   private buildHtml(template: string, data: Record<string, string>): string {
@@ -77,15 +77,15 @@ export class ResendNotificationProvider implements NotificationProvider {
     const BRAND_HEADER = `
       <div style="background: linear-gradient(135deg, #f97316 0%, #e11d48 100%); padding: 28px 32px; border-radius: 16px 16px 0 0;">
         <h1 style="margin: 0; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px;">
-          🛍️ MTRUONG-STORE
+          🛍️ Cún-shop
         </h1>
       </div>
     `;
     const FOOTER = `
       <div style="background: #1e293b; padding: 20px 32px; border-radius: 0 0 16px 16px; text-align: center;">
         <p style="margin: 0; font-size: 12px; color: #64748b;">
-          © 2026 MTRUONG-STORE. Mọi thắc mắc liên hệ
-          <a href="mailto:support@mtruong-store.vn" style="color: #f97316;">support@mtruong-store.vn</a>
+          © 2026 Cún-shop. Mọi thắc mắc liên hệ
+          <a href="mailto:support@cun-shop.vn" style="color: #f97316;">support@cun-shop.vn</a>
         </p>
       </div>
     `;
@@ -167,7 +167,7 @@ export class ResendNotificationProvider implements NotificationProvider {
       <div style="${BASE_STYLE}">
         ${BRAND_HEADER}
         <div style="background: #1e293b; padding: 36px 32px;">
-          <p style="color: #94a3b8; line-height: 1.6; margin: 0;">${data.text ?? 'Bạn có một thông báo mới từ MTRUONG-STORE.'}</p>
+          <p style="color: #94a3b8; line-height: 1.6; margin: 0;">${data.text ?? 'Bạn có một thông báo mới từ Cún-shop.'}</p>
         </div>
         ${FOOTER}
       </div>
@@ -176,12 +176,12 @@ export class ResendNotificationProvider implements NotificationProvider {
 
   private buildText(template: string, data: Record<string, string>): string {
     if (template === 'password-reset') {
-      return `Đặt lại mật khẩu MTRUONG-STORE\n\nNhấn vào liên kết sau để đặt lại mật khẩu:\n${data.resetUrl}\n\nLiên kết có hiệu lực trong 1 giờ.`;
+      return `Đặt lại mật khẩu Cún-shop\n\nNhấn vào liên kết sau để đặt lại mật khẩu:\n${data.resetUrl}\n\nLiên kết có hiệu lực trong 1 giờ.`;
     }
     if (template === 'order-confirmed') {
       return `Đơn hàng #${data.orderId} đã được xác nhận!\nTổng thanh toán: ${data.total}`;
     }
-    return data.text ?? 'Bạn có thông báo mới từ MTRUONG-STORE.';
+    return data.text ?? 'Bạn có thông báo mới từ Cún-shop.';
   }
 }
 

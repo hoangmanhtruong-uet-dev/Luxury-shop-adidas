@@ -95,11 +95,11 @@ export default function SellerRegisterPage() {
       {/* Header Section */}
       <div className="glass-card" style={{ padding: '32px', borderRadius: '16px', marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent)', fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
-          <FiShield size={16} /> MTRUONG-STORE PARTNER NETWORK
+          <FiShield size={16} /> Cún-shop PARTNER NETWORK
         </div>
         <h1 style={{ fontSize: '28px', fontWeight: 800, margin: '0 0 12px 0' }}>Đăng ký Người bán & Xác thực danh tính (KYC)</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginBottom: '32px' }}>
-          Trở thành đối tác bán hàng chính thức trên hệ sinh thái MTRUONG-STORE, tiếp cận hơn 500.000+ khách hàng tiềm năng.
+          Trở thành đối tác bán hàng chính thức trên hệ sinh thái Cún-shop, tiếp cận hơn 500.000+ khách hàng tiềm năng.
         </p>
 
         {/* Steps */}
@@ -116,7 +116,7 @@ export default function SellerRegisterPage() {
           <div>
             <strong style={{ color: '#10b981', fontSize: '14px' }}>Bảo mật cấp ngân hàng: </strong>
             <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', lineHeight: 1.5 }}>
-              MTRUONG-STORE cam kết bảo mật 100% dữ liệu định danh cá nhân và thông tin thuế theo tiêu chuẩn mã hóa quốc tế AES-256. Giấy tờ chỉ sử dụng để đối soát pháp lý thương mại.
+              Cún-shop cam kết bảo mật 100% dữ liệu định danh cá nhân và thông tin thuế theo tiêu chuẩn mã hóa quốc tế AES-256. Giấy tờ chỉ sử dụng để đối soát pháp lý thương mại.
             </span>
           </div>
         </div>
@@ -158,10 +158,10 @@ export default function SellerRegisterPage() {
             <div>
               <Label text="Ngành hàng chính dự kiến bán" required />
               <select className="input-field" value={form.industry} onChange={e => setForm({...form, industry: e.target.value})} disabled={isPending || isApproved}>
-                <option>Thiết bị công nghệ & Flagship Gadgets</option>
-                <option>Thời trang cao cấp & Phụ kiện</option>
-                <option>Mỹ phẩm & Chăm sóc sắc đẹp</option>
-                <option>Nhà cửa & Đời sống</option>
+                <option>Giày đá bóng & Phụ kiện bóng đá</option>
+                <option>Thương hiệu thể thao chính hãng</option>
+                <option>Đồ thể thao & Quần áo bóng đá</option>
+                <option>Bóng & Dụng cụ tập luyện</option>
               </select>
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function SellerRegisterPage() {
           <SectionTitle number="3" title="Chính sách Người bán & Cam kết chất lượng" />
           
           <ol style={{ paddingLeft: '20px', color: 'rgba(255,255,255,0.7)', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>
-            <li style={{ marginBottom: '12px' }}><strong style={{ color: '#fff' }}>Cam kết nguồn gốc hàng hóa:</strong> Nhà bán hàng cam kết chỉ phân phối các mặt hàng chính hãng, có hóa đơn chứng từ đầy đủ. Nghiêm cấm phân phối hàng giả, hàng nhái, hàng vi phạm sở hữu trí tuệ trên MTRUONG-STORE.</li>
+            <li style={{ marginBottom: '12px' }}><strong style={{ color: '#fff' }}>Cam kết nguồn gốc hàng hóa:</strong> Nhà bán hàng cam kết chỉ phân phối các mặt hàng chính hãng, có hóa đơn chứng từ đầy đủ. Nghiêm cấm phân phối hàng giả, hàng nhái, hàng vi phạm sở hữu trí tuệ trên Cún-shop.</li>
             <li style={{ marginBottom: '12px' }}><strong style={{ color: '#fff' }}>Quy chế hoàn tiền gấp 10 lần:</strong> Trong trường hợp khách hàng phát hiện sản phẩm giả/nhái đã qua thẩm định từ phía Shop, Shop chấp nhận bồi hoàn 100% giá trị đơn hàng và chịu mức phạt theo hợp đồng cung ứng dịch vụ.</li>
             <li><strong style={{ color: '#fff' }}>Bảo mật thông tin:</strong> Tuân thủ nghiêm ngặt chuẩn an ninh dữ liệu Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân.</li>
           </ol>
@@ -261,7 +261,7 @@ export default function SellerRegisterPage() {
           <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
             <input type="checkbox" checked={acceptedPolicy} onChange={e => setAcceptedPolicy(e.target.checked)} style={{ width: '18px', height: '18px', marginTop: '2px', accentColor: 'var(--accent)' }} disabled={isPending || isApproved} />
             <span style={{ fontSize: '14px', lineHeight: 1.5 }}>
-              Tôi cam kết các thông tin và tài liệu định danh cung cấp là hoàn toàn chính xác, chịu trách nhiệm trước pháp luật và đồng ý với <strong style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Quy chế hoạt động Người bán MTRUONG-STORE</strong>.
+              Tôi cam kết các thông tin và tài liệu định danh cung cấp là hoàn toàn chính xác, chịu trách nhiệm trước pháp luật và đồng ý với <strong style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Quy chế hoạt động Người bán Cún-shop</strong>.
             </span>
           </label>
         </div>

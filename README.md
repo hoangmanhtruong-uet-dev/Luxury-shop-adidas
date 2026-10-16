@@ -1,4 +1,4 @@
-# MTRUONG-STORE
+# Cún-shop
 
 Nền tảng thương mại điện tử đa vai trò xây dựng với Next.js App Router, Prisma và MySQL. Dự án gồm storefront cho khách hàng, Seller Center, Admin Panel và luồng giao hàng cho shipper.
 
@@ -16,7 +16,7 @@ Nền tảng thương mại điện tử đa vai trò xây dựng với Next.js 
 | Thành phần | Công nghệ |
 | --- | --- |
 | Web/API | Next.js 16, React, TypeScript |
-| Dữ liệu | MySQL 8, Prisma |
+| Dữ liệu | PostgreSQL (Supabase production, local Docker), Prisma |
 | Xác thực | `jose`, `bcryptjs`, HTTP-only cookies |
 | Client state | Zustand |
 | Styling | Tailwind CSS + CSS toàn cục |
@@ -25,7 +25,7 @@ Nền tảng thương mại điện tử đa vai trò xây dựng với Next.js 
 ## Yêu cầu
 
 - Node.js 22 hoặc mới hơn
-- MySQL 8+
+- PostgreSQL 16+ (local: `docker run -d --name pg-dev -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=website_banhang -p 5432:5432 postgres:16`)
 - npm
 
 ## Cài đặt nhanh
@@ -57,7 +57,7 @@ Seed/demo không còn chứa mật khẩu mặc định trong mã nguồn. Chỉ
 
 Sao chép `.env.example` để xem toàn bộ biến. Những nhóm cấu hình chính:
 
-- `DATABASE_URL`: chuỗi kết nối MySQL.
+- `DATABASE_URL`: chuỗi kết nối PostgreSQL runtime (production: qua Supabase pooler 6543 + `?pgbouncer=true`); `DIRECT_URL`: direct connection cho migrate.
 - `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `ACCESS_TOKEN_TTL`, `REFRESH_TOKEN_TTL`: xác thực và session.
 - `NEXT_PUBLIC_APP_URL`, `API_ALLOWED_ORIGINS`, `TRUST_PROXY`: URL triển khai và chính sách origin/proxy.
 - `STORAGE_PROVIDER`: `local` (chỉ dùng cho development) hoặc `cloudinary` (bắt buộc cho production). `s3` chưa được triển khai và bị từ chối ở production. Khi dùng Cloudinary, cung cấp `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
@@ -91,10 +91,10 @@ npm run inventory:reconcile
 npm run security:cleanup
 ```
 
-Integration test yêu cầu MySQL test riêng và biến `TEST_DATABASE_URL`; tên database phải kết thúc bằng `_test` để script từ chối chạy nhầm database thật:
+Integration test yêu cầu Postgres test riêng và biến `TEST_DATABASE_URL`; tên database phải kết thúc bằng `_test` để script từ chối chạy nhầm database thật:
 
 ```powershell
-$env:TEST_DATABASE_URL = 'mysql://USER:PASSWORD@localhost:3306/mtruong_store_test'
+$env:TEST_DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/mtruong_store_test?schema=public'
 npm run test:integration
 ```
 

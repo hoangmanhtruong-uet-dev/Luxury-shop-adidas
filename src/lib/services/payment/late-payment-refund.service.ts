@@ -13,7 +13,7 @@ export class LatePaymentRefundService {
       try {
         return await client.$transaction(async (tx) => {
           await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
-            SELECT id FROM ${Prisma.raw('`order`')} WHERE id = ${orderId} FOR UPDATE`);
+            SELECT id FROM ${Prisma.raw('"order"')} WHERE id = ${orderId} FOR UPDATE`);
           const order = await tx.order.findUnique({ where: { id: orderId } });
           if (!order) throw new NotFoundError('Order not found');
           const payment = await tx.payment.findUnique({ where: { orderId } });

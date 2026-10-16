@@ -45,7 +45,7 @@ export default function RegisterPage() {
         <div style={{ textAlign:'center', marginBottom:'40px' }}>
           <span style={{ fontSize:'48px', display:'block', marginBottom:'16px' }}>✨</span>
           <h1 style={{ fontSize:'28px', fontWeight:800, marginBottom:'8px' }}>Tạo tài khoản</h1>
-          <p style={{ color:'var(--text-muted)', fontSize:'14px' }}>Tham gia MTRUONG-STORE ngay hôm nay</p>
+          <p style={{ color:'var(--text-muted)', fontSize:'14px' }}>Tham gia Cún-shop ngay hôm nay</p>
         </div>
         <form onSubmit={handleSubmit} className="glass-card" style={{ padding:'32px' }}>
           {error && <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:'var(--radius-md)', padding:'12px', marginBottom:'20px', fontSize:'13px', color:'#ef4444' }}>{error}</div>}
@@ -80,14 +80,18 @@ export default function RegisterPage() {
             type="button" 
             onClick={async () => {
               addToast('Đang kết nối với Google... 🌐');
-              const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                  redirectTo: `${window.location.origin}/callback`
+              try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                  provider: 'google',
+                  options: {
+                    redirectTo: `${window.location.origin}/callback`
+                  }
+                });
+                if (error) {
+                  addToast('Không thể kết nối Google: ' + error.message);
                 }
-              });
-              if (error) {
-                addToast('Không thể kết nối Google: ' + error.message);
+              } catch (err) {
+                addToast('Không thể kết nối Google: ' + (err instanceof Error ? err.message : 'lỗi không xác định'));
               }
             }}
             style={{ 

@@ -2,9 +2,20 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/auth';
 import prisma from '@/lib/db';
 import speakeasy from 'speakeasy';
+import { SessionService } from '@/lib/services/auth/session.service';
+import { rateLimit, getRateLimitResponse } from '@/lib/rate-limit/rate-limit';
+import { getRateLimitIdentity } from '@/lib/network/client-ip';
 
 export async function POST(request: Request) {
   try {
+    // Phase 2.4 (Warning W3): the 2FA routes were the only auth-adjacent
+    // endpoints with no rate limiting at all.
+    const limiter = await rateLimit(getRateLimitIdentity(request, '2fa-verify'), {
+      windowMs: 15 * 60 * 1000,
+      max: 10,
+    });
+    if (!limiter.success) return getRateLimitResponse(limiter);
+
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -33,7 +44,8 @@ export async function POST(request: Request) {
       secret: user.twoFactorSecret,
       encoding: 'base32',
       token,
-      window: 1 // Allow 30 seconds before/after
+      // Phase 2.4: was `window: 1`, which accepted the same code for 90 seconds.
+      window: 0,
     });
 
     if (!isValid) {
@@ -44,6 +56,9 @@ export async function POST(request: Request) {
       where: { id: session.userId },
       data: { isTwoFactorEnabled: true },
     });
+
+    // Enabling 2FA is a security-relevant change: evict other sessions.
+    await SessionService.revokeAllUserSessions(session.userId);
 
     return NextResponse.json({ success: true, message: 'Đã bật 2FA thành công' });
   } catch (error) {

@@ -167,7 +167,7 @@ export default function BankPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 13, letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 6 }}><FiCreditCard /> NGÂN HÀNG DEMO & MTRUONG FINTECH</span>
+              <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 13, letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 6 }}><FiCreditCard /> NGÂN HÀNG DEMO & CÚN FINTECH</span>
               <span style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '4px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>Trực tuyến 24/7</span>
             </div>
             
@@ -182,7 +182,7 @@ export default function BankPage() {
             </div>
             
             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, maxWidth: 500, lineHeight: 1.6, margin: 0 }}>
-              Đây là số dư tiền mô phỏng trong hệ thống thương mại điện tử MTRUONG-STORE để thử nghiệm thanh toán đơn hàng & trải nghiệm API, hoàn toàn an toàn và không liên kết trực tiếp với ngân hàng hay ví MoMo thực tế.
+              Đây là số dư tiền mô phỏng trong hệ thống thương mại điện tử Cún-shop để thử nghiệm thanh toán đơn hàng & trải nghiệm API, hoàn toàn an toàn và không liên kết trực tiếp với ngân hàng hay ví MoMo thực tế.
             </p>
           </div>
           
@@ -195,6 +195,9 @@ export default function BankPage() {
 
         <div style={{ height: 1, background: 'rgba(255,255,255,0.05)', margin: '32px 0' }} />
 
+        {/* Phase 1.2: the demo top-up endpoint is rejected in production, so the UI
+            must not advertise it there. `process.env.NODE_ENV` is inlined at build time. */}
+        {process.env.NODE_ENV !== 'production' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div style={{ fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -236,6 +239,7 @@ export default function BankPage() {
           </div>
           {topUpError && <p style={{ color: '#ef4444', fontSize: 13, marginTop: 8 }}>{topUpError}</p>}
         </div>
+        )}
       </section>
 
       {/* Grid: PIN & Bank Add */}
@@ -423,7 +427,7 @@ export default function BankPage() {
                     Nạp tiền số dư Demo
                   </div>
                 </td>
-                <td style={{ padding: '16px', color: 'rgba(255,255,255,0.8)' }}>Hệ thống Sandbox<br/><span style={{fontSize:12,color:'var(--text-muted)'}}>MTRUONG</span></td>
+                <td style={{ padding: '16px', color: 'rgba(255,255,255,0.8)' }}>Hệ thống Sandbox<br/><span style={{fontSize:12,color:'var(--text-muted)'}}>CÚN</span></td>
                 <td style={{ padding: '16px', textAlign: 'right', fontWeight: 700, color: '#10b981' }}>+1.000.000 đ</td>
                 <td style={{ padding: '16px', textAlign: 'center' }}>
                   <span style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>Thành công</span>

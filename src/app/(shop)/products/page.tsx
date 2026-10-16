@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import ProductCard from '@/components/product/ProductCard';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Product } from '@/types/product';
+import { extractProducts, isPaginatedProductsResponse } from '@/lib/api/products-response';
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -14,6 +15,7 @@ export default function ProductsPage() {
   const [sortBy, setSortBy] = useState('default');
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [products, setProducts] = useState<Product[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState<string[]>(['Tất cả']);
   const [loading, setLoading] = useState(true);
 
@@ -49,7 +51,11 @@ export default function ProductsPage() {
       const res = await fetch(`/api/products?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
-        setProducts(data);
+        const products = extractProducts(data);
+        setProducts(products);
+        setTotalPages(
+          isPaginatedProductsResponse(data) ? data.pagination.totalPages : 1,
+        );
       }
     } catch (err) {
       console.error('Lỗi khi tải sản phẩm:', err);

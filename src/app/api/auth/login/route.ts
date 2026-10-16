@@ -55,7 +55,7 @@ export async function POST(req: Request) {
         secret: user.twoFactorSecret!,
         encoding: 'base32',
         token: twoFactorCode,
-        window: 1
+        window: 0 // Phase 2.4: was 1, accepting a single code for 90 seconds
       });
       if (!isValid) {
         return NextResponse.json({ error: 'Mã xác thực 2FA không chính xác' }, { status: 401 });
