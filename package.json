@@ -29,6 +29,7 @@
     "idempotency:cleanup": "tsx scripts/maintenance/cleanup-idempotency.ts",
     "security:cleanup": "tsx scripts/maintenance/cleanup-security-buckets.ts",
     "typecheck": "tsc --noEmit",
+    "test": "npm run typecheck && npm run money:static && npm run order-state:audit",
     "inventory:expire": "tsx scripts/maintenance/inventory-jobs.ts expire",
     "inventory:reconcile": "tsx scripts/maintenance/inventory-jobs.ts reconcile",
     "inventory:repair": "tsx scripts/maintenance/inventory-jobs.ts repair",
